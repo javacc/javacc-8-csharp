@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.javacc.generator</groupId>
-		<version>8.0.0-SNAPSHOT</version>
+		<version>8.0.0</version>
 		<artifactId>csharp</artifactId>
 	</parent>
 	<groupId>org.javacc.generator.csharp</groupId>
@@ -114,7 +113,7 @@
 							<fork>true</fork>
 							<compilerArguments>
 								<target>exe</target>
-								<nologo></nologo>
+								<nologo />
 							</compilerArguments>
 						</configuration>
 						<dependencies>
@@ -140,7 +139,7 @@
 										<exec dir="${project.basedir}/target/generated-sources/java" executable="dotnet.exe">
 											<arg line="new classlib" />
 										</exec>
-										<exec dir="${project.basedir}/target/generated-sources/java" executable="dotnet.exe"  failonerror="true">
+										<exec dir="${project.basedir}/target/generated-sources/java" executable="dotnet.exe" failonerror="true">
 											<arg line="build"/>
 										</exec>
 									</target>
