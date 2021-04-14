@@ -73,13 +73,13 @@
 								<dependency>
 									<groupId>org.javacc</groupId>
 									<artifactId>core</artifactId>
-									<version>${project.version}</version>
+									<version>${javacc.core}</version>
 									<scope>runtime</scope>
 								</dependency>
 								<dependency>
-									<groupId>org.javacc.generator</groupId>
+									<groupId>org.javacc.generator.csharp</groupId>
 									<artifactId>csharp</artifactId>
-									<version>${project.version}</version>
+									<version>${javacc.csharp}</version>
 									<scope>runtime</scope>
 								</dependency>
 							</dependencies>
@@ -172,7 +172,7 @@
 									<scope>runtime</scope>
 								</dependency>
 								<dependency>
-									<groupId>org.javacc.generator</groupId>
+									<groupId>org.javacc.generator.csharp</groupId>
 									<artifactId>csharp</artifactId>
 									<version>${javacc.csharp}</version>
 									<scope>runtime</scope>
@@ -236,7 +236,7 @@
 									<scope>runtime</scope>
 								</dependency>
 								<dependency>
-									<groupId>org.javacc.generator</groupId>
+									<groupId>org.javacc.generator.csharp</groupId>
 									<artifactId>csharp</artifactId>
 									<version>${javacc.csharp}</version>
 									<scope>runtime</scope>
@@ -447,4 +447,5 @@
 	</profiles>
 	<name>JavaCC default C# code generator: it</name>
 	<description>JavaCC default C# code generator: it</description>
+	<version>1.0.0</version>
 </project>

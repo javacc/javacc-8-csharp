@@ -58,8 +58,8 @@
 							<postBuildHookScript>verify.bsh</postBuildHookScript>
 							<localRepositoryPath>local-repo</localRepositoryPath>
 						</configuration>
-<!-- 
 						<executions>
+<!-- 
 							<execution>
 								<id>integration-test-csharp-bugs</id>
 								<goals>
@@ -106,9 +106,9 @@
 	 								</pomExcludes>
  								</configuration>
 							</execution>
+-->
 						</executions>
- -->
- 					</plugin>
+  					</plugin>
 				</plugins>
 			</build>
 		</profile>

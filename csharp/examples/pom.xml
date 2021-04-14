@@ -5,8 +5,8 @@
 	<parent>
 		<groupId>org.javacc.generator.it</groupId>
 		<artifactId>csharp</artifactId>
-		<version>8.0.1-SNAPSHOT</version>
-		<relativePath>../../it/csharp</relativePath>
+		<version>1.0.0</version>
+		<relativePath>../it</relativePath>
 	</parent>
 
 	<name>JavaCC C# examples</name>

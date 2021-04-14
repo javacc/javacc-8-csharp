@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.javacc.generator.csharp</groupId>
 		<artifactId>bugs</artifactId>
-		<version>8.0.1-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 	<groupId>org.javacc.generator.csharp.bugs</groupId>
 	<artifactId>bug002</artifactId>
@@ -39,7 +39,7 @@
 						<id>compare-out</id>
 						<phase>test</phase>
 						<goals>
-							<goal>run</goal>																													
+							<goal>run</goal>
 						</goals>
 						<configuration>
 							<target unless="maven.test.skip">
