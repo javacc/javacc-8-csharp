@@ -121,6 +121,7 @@
 	 									<pomExclude>LexicalState/pom.xml</pomExclude>
 	 									<pomExclude>Interpreter/pom.xml</pomExclude>
 	 									<pomExclude>JJTreeExamples/pom.xml</pomExclude>
+	 									<pomExclude>UserTokenManager/pom.xml</pomExclude>
 	 									<pomExclude>MailProcessing/pom.xml</pomExclude>
 	 								</pomExcludes>
  								</configuration>
