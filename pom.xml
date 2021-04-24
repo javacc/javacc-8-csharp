@@ -118,6 +118,7 @@
 									<projectsDirectory>examples</projectsDirectory>
 									<settingsFile>examples/settings.xml</settingsFile>
 	 								<pomExcludes>
+	 									<pomExclude>LexicalState/pom.xml</pomExclude>
 	 									<pomExclude>Interpreter/pom.xml</pomExclude>
 	 									<pomExclude>JJTreeExamples/pom.xml</pomExclude>
 	 									<pomExclude>MailProcessing/pom.xml</pomExclude>
