@@ -28,8 +28,8 @@ namespace Bug002
             }
             try
             {
-                Bug parser = new Bug(input);
-                parser.EnumerationItem();
+                ComplexLineComment parser = new ComplexLineComment(input);
+                parser.Input();
             }
             catch (Exception e)
             {
