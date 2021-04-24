@@ -1,0 +1,2 @@
+Where is csc.exe:
+	dir /s %WINDIR%\CSC.EXE

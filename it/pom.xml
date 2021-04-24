@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org</groupId>
@@ -6,9 +7,12 @@
 		<version>8.0.5</version>
 		<relativePath></relativePath>
 	</parent>
-	<groupId>org.javacc.generator</groupId>
+	<groupId>org.javacc.generator.csharp</groupId>
 	<artifactId>it</artifactId>
 	<packaging>pom</packaging>
+	<name>JavaCC default C# code generator: it</name>
+	<description>JavaCC default C# code generator: it</description>
+	<version>1.0.0</version>
 	<repositories>
 		<repository>
 			<id>dotnet-tools</id>
@@ -22,6 +26,10 @@
 		</repository>
 	</repositories>
 
+	<properties>
+		<javacc.csharp>8.0.1-SNAPSHOT</javacc.csharp>
+		<plexus-compiler-csharp>2.8.8</plexus-compiler-csharp>
+	</properties>
 	<profiles>
 		<profile>
 			<id>Windows</id>
@@ -85,6 +93,20 @@
 								</dependency>
 							</dependencies>
 						</plugin>
+<!-- 
+						<plugin>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<version>3.8.1</version>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.plexus</groupId>
+									<artifactId>plexus-compiler-csharp</artifactId>
+									<version>${plexus-compiler-csharp}</version>
+									<scope>runtime</scope>
+								</dependency>
+							</dependencies>
+						</plugin>
+ -->
 					</plugins>
 				</pluginManagement>
 				<plugins>
@@ -109,7 +131,15 @@
 					<plugin>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.8.1</version>
+						<dependencies>
+							<dependency>
+								<groupId>org.codehaus.plexus</groupId>
+								<artifactId>plexus-compiler-csharp</artifactId>
+								<version>2.8.4</version>
+							</dependency>
+						</dependencies>
 						<configuration>
+							<verbose>true</verbose>
 							<compilerId>csharp</compilerId>
 							<fork>true</fork>
 							<compilerArguments>
@@ -117,13 +147,6 @@
 								<nologo />
 							</compilerArguments>
 						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>org.codehaus.plexus</groupId>
-								<artifactId>plexus-compiler-csharp</artifactId>
-								<version>2.8.6</version>
-							</dependency>
-						</dependencies>
 					</plugin>
 <!-- 
 					<plugin>
@@ -446,7 +469,4 @@
 			</build>
 		</profile>
 	</profiles>
-	<name>JavaCC default C# code generator: it</name>
-	<description>JavaCC default C# code generator: it</description>
-	<version>1.0.0</version>
 </project>

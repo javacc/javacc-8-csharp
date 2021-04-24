@@ -84,18 +84,18 @@
 							<failIfNoProjects>true</failIfNoProjects>
 							<ignoreFailures>false</ignoreFailures>
 							<streamLogs>false</streamLogs>
-							<debug>false</debug>
+							<debug>true</debug>
 							<postBuildHookScript>verify.bsh</postBuildHookScript>
 							<localRepositoryPath>it/local-repo</localRepositoryPath>
 							<properties>
 								<javacc.core>${javacc.core}</javacc.core>
-								<javacc.cpp>${javacc.csharp}</javacc.cpp>
+								<javacc.csharp>${javacc.csharp}</javacc.csharp>
+								<plexus-compiler-csharp>2.8.8</plexus-compiler-csharp>
 								<exec-maven-plugin>1.6.0</exec-maven-plugin>
 								<javacc-maven-plugin>${javacc-maven-plugin}</javacc-maven-plugin>
 							</properties>
 						</configuration>
 						<executions>
-<!-- 
 							<execution>
 								<id>integration-test-csharp-bugs</id>
 								<goals>
@@ -111,6 +111,7 @@
  								</configuration>
 							</execution>
 
+<!-- 
 							<execution>
 								<id>integration-test-csharp-examples</id>
 								<goals>
