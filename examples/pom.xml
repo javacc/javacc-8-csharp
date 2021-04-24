@@ -3,10 +3,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.javacc.generator.it</groupId>
-		<artifactId>csharp</artifactId>
+		<groupId>org.javacc.generator.csharp</groupId>
 		<version>1.0.0</version>
 		<relativePath>../it</relativePath>
+		<artifactId>it</artifactId>
 	</parent>
 
 	<name>JavaCC C# examples</name>
@@ -19,6 +19,7 @@
 		<module>Interpreter</module>
 		<module>JJTreeExamples</module>
 		<module>MailProcessing</module>
+		<module>LexicalState</module>
 		<module>UserTokenManager</module>
 <!-- 
 		<module>SpecialToken</module>

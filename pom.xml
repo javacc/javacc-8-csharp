@@ -108,7 +108,6 @@
 								</configuration>
 							</execution>
 
-<!-- 
 							<execution>
 								<id>integration-test-csharp-examples</id>
 								<goals>
@@ -119,13 +118,13 @@
 									<projectsDirectory>examples</projectsDirectory>
 									<settingsFile>examples/settings.xml</settingsFile>
 	 								<pomExcludes>
-	 									<pomExclude>CORBA-IDL/pom.xml</pomExclude>
 	 									<pomExclude>Interpreter/pom.xml</pomExclude>
 	 									<pomExclude>JJTreeExamples/pom.xml</pomExclude>
 	 									<pomExclude>MailProcessing/pom.xml</pomExclude>
 	 								</pomExcludes>
  								</configuration>
 							</execution>
+<!-- 
 							<execution>
 								<id>integration-test-csharp-grammars</id>
 								<goals>
