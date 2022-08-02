@@ -232,7 +232,7 @@
 
 
 #if ERROR_REPORTING
-  private int[] jj_la1 = new int[${numproductions}];  // TODO(sreeni): check this out.
+  private int[] jj_la1 = new int[${maskindex}];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -349,10 +349,11 @@
 
 #if ERROR_REPORTING
   private int jj_kind = -1;
-  private JJCalls[] jj_2_rtns = new JJCalls[${numproductions}];
+  private JJCalls[] jj_2_rtns = new JJCalls[${jj2index}];
   private bool jj_rescan = false;
   private int jj_gc = 0;
   private void jj_save(int index, int xla) {
+     if (${jj2index} > 0) {
 	 JJCalls p = jj_2_rtns[index];
 	 while (p.gen > jj_gen) {
 	   if (p.next == null) { p = p.next = new JJCalls(); break; }
@@ -362,6 +363,7 @@
 	 p.gen = jj_gen + xla - jj_la; 
 	 p.first = token;
 	 p.arg = xla;
+     }
   }
 
 
@@ -374,7 +376,7 @@
 
   private void jj_rescan_token() {
 	 jj_rescan = true;
-	 for (int i = 0; i < ${numproductions}; i++) {
+	 for (int i = 0; i < ${jj2index}; i++) {
 		 JJCalls p = jj_2_rtns[i];
 
 		 while (p != null) {

@@ -145,7 +145,11 @@ class ParserCodeGenerator implements org.javacc.parser.ParserCodeGenerator {
       }
 
       processProductions(settings, codeGenerator);
+
       settings.put("numproductions", internalIndexes.size());
+      settings.put("jj2index", jj2Index);
+      settings.put("maskindex", maskIndex);
+
       codeGenerator.printTemplate(ParserCodeGenerator.parserTemplate);
       codeGenerator.println("\n}");
       if (!"".equals(Options.getNamespace())) {
@@ -410,7 +414,7 @@ class ParserCodeGenerator implements org.javacc.parser.ParserCodeGenerator {
               break;
             case OPENSWITCH:
               retval += " else {" + "\u0001";
-              if (false && Options.getErrorReporting()) {
+              if (Options.getErrorReporting()) {
                 retval += "\njj_la1[" + maskIndex + "] = jj_gen;";
                 maskIndex++;
               }
@@ -519,7 +523,7 @@ class ParserCodeGenerator implements org.javacc.parser.ParserCodeGenerator {
             break;
           case OPENSWITCH:
             retval += "else {" + "\u0001";
-            if (false && Options.getErrorReporting()) {
+            if (Options.getErrorReporting()) {
               retval += "\njj_la1[" + maskIndex + "] = jj_gen;";
               maskIndex++;
             }
@@ -565,7 +569,7 @@ class ParserCodeGenerator implements org.javacc.parser.ParserCodeGenerator {
         break;
       case OPENSWITCH:
         retval += " else {" + "\u0001";
-        if (false && Options.getErrorReporting()) {
+        if (Options.getErrorReporting()) {
           retval += "\njj_la1[" + maskIndex + "] = jj_gen;";
           maskVals.add(tokenMask);
           maskIndex++;
@@ -885,7 +889,7 @@ class ParserCodeGenerator implements org.javacc.parser.ParserCodeGenerator {
     codeGenerator.println("    jj_done = false;");
     codeGenerator.println("    if (!jj_3" + internalName(e) + "() || jj_done) return true;");
     if (Options.getErrorReporting()) {
-      codeGenerator.println("jj_save(" + internalIndex(e) + ", xla);");
+      codeGenerator.println("jj_save(" + (internalIndex(e)-1) + ", xla);");
     }
     codeGenerator.println("return false;");
     codeGenerator.println("  }");
