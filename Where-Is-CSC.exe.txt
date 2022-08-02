@@ -1,2 +1,44 @@
 Where is csc.exe:
 	dir /s %WINDIR%\CSC.EXE
+	
+as for exemple
+D:\projects\javacc\javacc-8\codegen>dir /s %WINDIR%\CSC.EXE
+ Le volume dans le lecteur C s’appelle OS
+ Le numéro de série du volume est 483C-2641
+
+ Répertoire de C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727
+
+03/12/2019  15:04            80 296 csc.exe
+               1 fichier(s)           80 296 octets
+
+ Répertoire de C:\WINDOWS\Microsoft.NET\Framework\v3.5
+
+03/12/2019  15:04         1 548 432 csc.exe
+               1 fichier(s)        1 548 432 octets
+
+ Répertoire de C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319
+
+07/12/2019  11:10         2 141 552 csc.exe
+               1 fichier(s)        2 141 552 octets
+
+ Répertoire de C:\WINDOWS\Microsoft.NET\Framework64\v2.0.50727
+
+08/11/2019  15:44            91 256 csc.exe
+               1 fichier(s)           91 256 octets
+
+ Répertoire de C:\WINDOWS\Microsoft.NET\Framework64\v3.5
+
+08/11/2019  15:44         2 290 808 csc.exe
+               1 fichier(s)        2 290 808 octets
+
+ Répertoire de C:\WINDOWS\Microsoft.NET\Framework64\v4.0.30319
+
+07/12/2019  11:10         2 759 232 csc.exe
+               1 fichier(s)        2 759 232 octets
+
+D:\projects\javacc\javacc-8\codegen>
+
+then one should add C:\WINDOWS\Microsoft.NET\Framework64\v4.0.30319 to the PATH variable with
+
+set PATH=C:\WINDOWS\Microsoft.NET\Framework64\v4.0.30319;%PATH%
+
