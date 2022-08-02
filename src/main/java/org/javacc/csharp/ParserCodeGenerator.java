@@ -410,7 +410,7 @@ class ParserCodeGenerator implements org.javacc.parser.ParserCodeGenerator {
               break;
             case OPENSWITCH:
               retval += " else {" + "\u0001";
-              if (Options.getErrorReporting()) {
+              if (false && Options.getErrorReporting()) {
                 retval += "\njj_la1[" + maskIndex + "] = jj_gen;";
                 maskIndex++;
               }
@@ -519,7 +519,7 @@ class ParserCodeGenerator implements org.javacc.parser.ParserCodeGenerator {
             break;
           case OPENSWITCH:
             retval += "else {" + "\u0001";
-            if (Options.getErrorReporting()) {
+            if (false && Options.getErrorReporting()) {
               retval += "\njj_la1[" + maskIndex + "] = jj_gen;";
               maskIndex++;
             }
@@ -565,7 +565,7 @@ class ParserCodeGenerator implements org.javacc.parser.ParserCodeGenerator {
         break;
       case OPENSWITCH:
         retval += " else {" + "\u0001";
-        if (Options.getErrorReporting()) {
+        if (false && Options.getErrorReporting()) {
           retval += "\njj_la1[" + maskIndex + "] = jj_gen;";
           maskVals.add(tokenMask);
           maskIndex++;

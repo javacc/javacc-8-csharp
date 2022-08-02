@@ -30,7 +30,7 @@ namespace IDL {
             }
             catch (Exception e)
             {
-                error.Write(e);
+                output.Write(e);
             }
             finally
             {
