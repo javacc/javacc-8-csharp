@@ -32,18 +32,21 @@ THE POSSIBILITY OF SUCH DAMAGE.
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org</groupId>
     <artifactId>javacc</artifactId>
-    <version>8.0.5</version>
+    <version>8.1.0-SNAPSHOT</version>
     <relativePath></relativePath>
   </parent>
+
   <groupId>org.javacc.generator.csharp</groupId>
   <artifactId>it</artifactId>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>JavaCC default C# code generator: it</name>
-  <description>JavaCC default C# code generator: it</description>
-  <version>1.0.0</version>
+
+  <name>JavaCC C# code generator / it</name>
+
   <repositories>
     <repository>
       <id>dotnet-tools</id>
@@ -59,9 +62,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
   <properties>
     <javacc.csharp>8.0.1-SNAPSHOT</javacc.csharp>
-    <plexus-compiler-csharp>2.8.8</plexus-compiler-csharp>
+    <plexus-compiler-csharp>2.15.0</plexus-compiler-csharp>
   </properties>
+
   <profiles>
+
     <profile>
       <id>Windows</id>
       <activation>
@@ -73,6 +78,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         <suffix>exe</suffix>
       </properties>
     </profile>
+
     <profile>
       <id>Linux</id>
       <activation>
@@ -84,6 +90,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         <suffix>sh</suffix>
       </properties>
     </profile>
+
     <profile>
       <id>MacOS</id>
       <activation>
@@ -109,29 +116,29 @@ THE POSSIBILITY OF SUCH DAMAGE.
             <plugin>
               <groupId>org.javacc.plugin</groupId>
               <artifactId>javacc-maven-plugin</artifactId>
+              <version>${javacc-maven-plugin.version}</version>
               <dependencies>
                 <dependency>
                   <groupId>org.javacc.generator</groupId>
                   <artifactId>csharp</artifactId>
-                  <version>${javacc.csharp}</version>
+                  <version>${javacc.csharp.version}</version>
                   <scope>runtime</scope>
                 </dependency>
               </dependencies>
             </plugin>
-            <!-- 
-						<plugin>
-							<artifactId>maven-compiler-plugin</artifactId>
-							<version>3.8.1</version>
-							<dependencies>
-								<dependency>
-									<groupId>org.codehaus.plexus</groupId>
-									<artifactId>plexus-compiler-csharp</artifactId>
-									<version>${plexus-compiler-csharp}</version>
-									<scope>runtime</scope>
-								</dependency>
-							</dependencies>
-						</plugin>
- -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>${maven-compiler-plugin.version}</version>
+              <dependencies>
+                <dependency>
+                  <groupId>org.codehaus.plexus</groupId>
+                  <artifactId>plexus-compiler-csharp</artifactId>
+                  <version>${plexus-compiler-csharp.version}</version>
+                  <scope>runtime</scope>
+                </dependency>
+              </dependencies>
+            </plugin>
           </plugins>
         </pluginManagement>
         <plugins>
@@ -154,13 +161,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
             </executions>
           </plugin>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
             <dependencies>
               <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-compiler-csharp</artifactId>
-                <version>2.8.4</version>
+                <version>${plexus-compiler-csharp.version}</version>
               </dependency>
             </dependencies>
             <configuration>
@@ -201,6 +208,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>jjt8</id>
       <activation>
@@ -218,7 +226,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 <dependency>
                   <groupId>org.javacc.generator</groupId>
                   <artifactId>csharp</artifactId>
-                  <version>${javacc.csharp}</version>
+                  <version>${javacc.csharp.version}</version>
                   <scope>runtime</scope>
                 </dependency>
               </dependencies>
@@ -246,13 +254,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
             </executions>
           </plugin>
           <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>${maven-compiler-plugin.version}</version>
             <dependencies>
               <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-compiler-csharp</artifactId>
-                <version>2.8.4</version>
+                <version>${plexus-compiler-csharp.version}</version>
               </dependency>
             </dependencies>
             <configuration>
@@ -264,6 +273,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>jjt8w</id>
       <build>
@@ -276,7 +286,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 <dependency>
                   <groupId>org.javacc.generator</groupId>
                   <artifactId>csharp</artifactId>
-                  <version>${javacc.csharp}</version>
+                  <version>${javacc.csharp.version}</version>
                   <scope>runtime</scope>
                 </dependency>
               </dependencies>
@@ -304,13 +314,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
             </executions>
           </plugin>
           <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>${maven-compiler-plugin.version}</version>
             <dependencies>
               <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-compiler-csharp</artifactId>
-                <version>2.8.4</version>
+                <version>${plexus-compiler-csharp.version}</version>
               </dependency>
             </dependencies>
             <configuration>
@@ -322,6 +333,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>jcc7</id>
       <build>
@@ -362,6 +374,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>jcc7w</id>
       <build>
@@ -402,6 +415,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>jjt7</id>
       <build>
@@ -442,6 +456,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>jjt7w</id>
       <build>
@@ -482,5 +497,62 @@ THE POSSIBILITY OF SUCH DAMAGE.
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <!-- maven-compiler-plugin with plexus-compiler-csharp:  2024/07
+           they assume the path to csc.exe is in the %PATH%;
+           if it is not the case, set a new environment variable CscCompilerDir to this path
+            (use dir /s %windir%\csc.exe and dir /s "%programfiles%\csc.exe"),
+            so this profile will be activated and pick it to set the path to the executable  -->
+      <id>csc-dir-env</id>
+      <activation>
+        <property>
+          <name>env.CSCCOMPILERDIR</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>${maven-compiler-plugin.version}</version>
+              <dependencies>
+                <dependency>
+                  <groupId>org.codehaus.plexus</groupId>
+                  <artifactId>plexus-compiler-csharp</artifactId>
+                  <version>${plexus-compiler-csharp.version}</version>
+                  <scope>runtime</scope>
+                </dependency>
+              </dependencies>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-compiler-csharp</artifactId>
+                <version>${plexus-compiler-csharp.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <verbose>true</verbose>
+              <compilerId>csharp</compilerId>
+              <fork>true</fork>
+              <executable>${env.CSCCOMPILERDIR}/csc.exe</executable>
+              <compilerArguments>
+                <target>exe</target>
+                <nologo />
+              </compilerArguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 </project>

@@ -32,22 +32,28 @@ THE POSSIBILITY OF SUCH DAMAGE.
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.javacc.generator.csharp</groupId>
     <artifactId>bugs</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
   </parent>
+
   <groupId>org.javacc.generator.csharp.bugs</groupId>
   <artifactId>bug002</artifactId>
+  <packaging>jar</packaging>
+
+  <name>JavaCC C# code generator / bugs / bug002</name>
+
   <build>
     <plugins>
+    
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.0.0</version>
         <executions>
           <execution>
-            <phase>integration-test</phase>
+            <phase>test</phase>
             <goals>
               <goal>exec</goal>
             </goals>
@@ -62,13 +68,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
           </arguments>
         </configuration>
       </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
             <id>compare-out</id>
-            <phase>integration-test</phase>
+            <phase>test</phase>
             <goals>
               <goal>run</goal>
             </goals>
