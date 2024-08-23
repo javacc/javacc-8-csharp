@@ -122,7 +122,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>org.javacc.generator</groupId>
                   <artifactId>csharp</artifactId>
                   <version>${javacc.csharp.version}</version>
-                  <scope>runtime</scope>
+                  <!--                  <scope>runtime</scope>-->
                 </dependency>
               </dependencies>
             </plugin>
@@ -135,7 +135,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>org.codehaus.plexus</groupId>
                   <artifactId>plexus-compiler-csharp</artifactId>
                   <version>${plexus-compiler-csharp.version}</version>
-                  <scope>runtime</scope>
+                  <!--                  <scope>runtime</scope>-->
                 </dependency>
               </dependencies>
             </plugin>
@@ -174,37 +174,46 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <verbose>true</verbose>
               <compilerId>csharp</compilerId>
               <fork>true</fork>
+              <!-- buggy [WARNING]  Parameter 'compilerArguments' is deprecated: use compilerArgs
+              instead.-->
               <compilerArguments>
+                <!-- unfortunately compiler options PreferredUILang & Utf8Output not supoorted
+                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
+                <out>${project.artifactId}.exe</out>
                 <target>exe</target>
-                <nologo />
+                <nologo>true</nologo>
               </compilerArguments>
             </configuration>
           </plugin>
-          <!-- 
-					<plugin>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>jcc8-dotnet-new</id>
-								<phase>generate-sources</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<target>
-										<exec dir="${project.basedir}/target/generated-sources/java" executable="dotnet.exe">
-											<arg line="new classlib" />
-										</exec>
-										<exec dir="${project.basedir}/target/generated-sources/java" executable="dotnet.exe"
-          failonerror="true">
-											<arg line="build"/>
-										</exec>
-									</target>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
- -->
+          <!-- probably an old attempt to use another way to compile -->
+          <!--
+            <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jcc8-dotnet-new</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <exec dir="${project.basedir}/target/generated-sources/java"
+                      executable="dotnet.exe">
+                      <arg line="new classlib" />
+                    </exec>
+                    <exec dir="${project.basedir}/target/generated-sources/java"
+                      executable="dotnet.exe"
+                      failonerror="true">
+                      <arg line="build" />
+                    </exec>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          -->
+
         </plugins>
       </build>
     </profile>
@@ -227,7 +236,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>org.javacc.generator</groupId>
                   <artifactId>csharp</artifactId>
                   <version>${javacc.csharp.version}</version>
-                  <scope>runtime</scope>
+                  <!--                  <scope>runtime</scope>-->
                 </dependency>
               </dependencies>
             </plugin>
@@ -254,9 +263,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
             </executions>
           </plugin>
           <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <version>${maven-compiler-plugin.version}</version>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${maven-compiler-plugin.version}</version>
             <dependencies>
               <dependency>
                 <groupId>org.codehaus.plexus</groupId>
@@ -268,6 +277,15 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <compilerId>csharp</compilerId>
               <verbose>true</verbose>
               <fork>true</fork>
+              <!-- buggy [WARNING]  Parameter 'compilerArguments' is deprecated: use compilerArgs
+              instead.-->
+              <compilerArguments>
+                <!-- unfortunately compiler options PreferredUILang & Utf8Output not supoorted
+                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
+                <out>${project.artifactId}.exe</out>
+                <target>exe</target>
+                <nologo>true</nologo>
+              </compilerArguments>
             </configuration>
           </plugin>
         </plugins>
@@ -287,7 +305,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>org.javacc.generator</groupId>
                   <artifactId>csharp</artifactId>
                   <version>${javacc.csharp.version}</version>
-                  <scope>runtime</scope>
+                  <!--                  <scope>runtime</scope>-->
                 </dependency>
               </dependencies>
             </plugin>
@@ -314,9 +332,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
             </executions>
           </plugin>
           <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <version>${maven-compiler-plugin.version}</version>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${maven-compiler-plugin.version}</version>
             <dependencies>
               <dependency>
                 <groupId>org.codehaus.plexus</groupId>
@@ -328,12 +346,23 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <compilerId>csharp</compilerId>
               <verbose>true</verbose>
               <fork>true</fork>
+              <!-- buggy [WARNING]  Parameter 'compilerArguments' is deprecated: use compilerArgs
+              instead.-->
+              <compilerArguments>
+                <!-- unfortunately compiler options PreferredUILang & Utf8Output not supoorted
+                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
+                <out>${project.artifactId}.exe</out>
+                <target>exe</target>
+                <nologo>true</nologo>
+              </compilerArguments>
             </configuration>
           </plugin>
         </plugins>
       </build>
     </profile>
 
+    <!-- old versions -->
+    <!--
     <profile>
       <id>jcc7</id>
       <build>
@@ -347,7 +376,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>net.java.dev.javacc</groupId>
                   <artifactId>javacc</artifactId>
                   <version>7.0.6</version>
-                  <scope>runtime</scope>
+                                    <scope>runtime</scope>
                 </dependency>
               </dependencies>
             </plugin>
@@ -388,7 +417,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>net.java.dev.javacc</groupId>
                   <artifactId>javacc</artifactId>
                   <version>7.0.6</version>
-                  <scope>runtime</scope>
+                                    <scope>runtime</scope>
                 </dependency>
               </dependencies>
             </plugin>
@@ -429,7 +458,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>net.java.dev.javacc</groupId>
                   <artifactId>javacc</artifactId>
                   <version>7.0.6</version>
-                  <scope>runtime</scope>
+                                    <scope>runtime</scope>
                 </dependency>
               </dependencies>
             </plugin>
@@ -470,7 +499,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>net.java.dev.javacc</groupId>
                   <artifactId>javacc</artifactId>
                   <version>7.0.6</version>
-                  <scope>runtime</scope>
+                                    <scope>runtime</scope>
                 </dependency>
               </dependencies>
             </plugin>
@@ -497,7 +526,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         </plugins>
       </build>
     </profile>
-
+-->
     <profile>
       <!-- maven-compiler-plugin with plexus-compiler-csharp:  2024/07
            they assume the path to csc.exe is in the %PATH%;
@@ -522,7 +551,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>org.codehaus.plexus</groupId>
                   <artifactId>plexus-compiler-csharp</artifactId>
                   <version>${plexus-compiler-csharp.version}</version>
-                  <scope>runtime</scope>
+                  <!--                  <scope>runtime</scope>-->
                 </dependency>
               </dependencies>
             </plugin>
@@ -543,10 +572,15 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <verbose>true</verbose>
               <compilerId>csharp</compilerId>
               <fork>true</fork>
-              <executable>${env.CSCCOMPILERDIR}/csc.exe</executable>
+              <executable>${env.CSCCOMPILERDIR}\csc.exe</executable>
+              <!-- buggy [WARNING]  Parameter 'compilerArguments' is deprecated: use compilerArgs
+              instead.-->
               <compilerArguments>
+                <!-- unfortunately compiler options PreferredUILang & Utf8Output not supoorted
+                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
+                <out>${project.artifactId}.exe</out>
                 <target>exe</target>
-                <nologo />
+                <nologo>true</nologo>
               </compilerArguments>
             </configuration>
           </plugin>
