@@ -88,9 +88,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
             <configuration>
               <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
               <arguments>
-                <argument>test/clc1.in</argument>
-                <argument>test/clc1.out</argument>
-                <argument>test/clc1.err</argument>
+                <argument>${project.basedir}/files/clc1.in</argument>
+                <argument>${project.basedir}/files/clc1.out</argument>
+                <argument>${project.basedir}/files/clc1.err</argument>
               </arguments>
             </configuration>
           </execution>
@@ -103,9 +103,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
             <configuration>
               <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
               <arguments>
-                <argument>test/clc2.in</argument>
-                <argument>test/clc2.out</argument>
-                <argument>test/clc2.err</argument>
+                <argument>${project.basedir}/files/clc2.in</argument>
+                <argument>${project.basedir}/files/clc2.out</argument>
+                <argument>${project.basedir}/files/clc2.err</argument>
               </arguments>
             </configuration>
           </execution>
@@ -118,9 +118,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
             <configuration>
               <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
               <arguments>
-                <argument>test/clc1-empty.in</argument>
-                <argument>test/clc1-empty.out</argument>
-                <argument>test/clc1-empty.err</argument>
+                <argument>${project.basedir}/files/clc1-empty.in</argument>
+                <argument>${project.basedir}/files/clc1-empty.out</argument>
+                <argument>${project.basedir}/files/clc1-empty.err</argument>
               </arguments>
             </configuration>
           </execution>
