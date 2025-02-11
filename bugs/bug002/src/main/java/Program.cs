@@ -25,30 +25,30 @@ namespace Bug002 {
       StreamWriter fError = null;
       try {
         // open files and redirect standard streams to them
-        fn = "input";
+        fn = "input file " + args[0];
         stdInput = Console.In;
         Console.SetIn(new StreamReader(args[0]));
-        fn = "output";
+        fn = "output file " + args[01];
         stdOutput = Console.Out;
         fOutput = new StreamWriter(args[1]);
         fOutput.AutoFlush = true;
         Console.SetOut(fOutput);
-        fn = "error";
+        fn = "error file " + args[2];
         stdError = Console.Error;
         fError = new StreamWriter(args[2]);
         fError.AutoFlush = true;
         Console.SetError(fError);
         // parse
-        Bug parser = new Bug(Console.In);
+        mns.Bug parser = new mns.Bug(Console.In);
         parser.enable_tracing();
         parser.EnumerationItem();
         Console.Error.WriteLine("Input file parsed successfully");
       } catch (IOException e) {
-        Console.Error.WriteLine("Error opening " + fn + " file");
+        Console.Error.WriteLine("Error opening " + fn);
         Console.Error.WriteLine(e.Message);
       } catch (Exception e) {
-        Console.Error.WriteLine("Error parsing input file");
-        Console.Error.WriteLine(e.Message);
+        Console.Error.WriteLine("Error parsing input file " + args[0]);
+        Console.Error.WriteLine(e.ToString());
       } finally {
         Console.In.Close();
         Console.Out.Close();
@@ -57,7 +57,7 @@ namespace Bug002 {
         if (stdOutput != null) Console.SetOut(stdOutput);
         if (stdError  != null) Console.SetError(stdError);
       }
-      
+     
     }
     
   }

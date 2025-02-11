@@ -1,4 +1,6 @@
-/* Copyright (c) 2006, Sun Microsystems, Inc.
+/*
+ * Copyright (c) 2020-2025, Sreeni Viswanadha <sreeni@viswanadha.net>.
+ * Copyright (c) 2024-2025, Marc Mazas <mazas.marc@gmail.com>.
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -25,11 +27,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-
 PARSER_BEGIN(Faq)
 
+// care: the line package, even if in comment, will be used!
 /*
+pac-kage faq;
+
 import java.io.*;
 
 public class Faq {
@@ -38,13 +41,13 @@ public class Faq {
 
   static int beginAt = 1;
 
-  static PrintWriter indstr;
+  static PrintWriter ixstr;
 
   static {
     try {
-      indstr = new PrintWriter(new FileWriter("index.html"));
-      indstr.println("<title>Selected list of emails from the JavaCC mailing list</title>");
-      indstr.println("<h2>Selected list of emails from the JavaCC mailing list</h2>");
+      ixstr = new PrintWriter(new FileWriter("index.html"));
+      ixstr.println("<title>Selected list of emails from the JavaCC mailing list</title>");
+      ixstr.println("<h2>Selected list of emails from the JavaCC mailing list</h2>");
     } catch (IOException e) {
       throw new Error();
     }
@@ -96,14 +99,14 @@ void MailFile() :
   <EOF>
 	{
 	  System.Console.WriteLine("");
-	  indstr.close();
+	  ixstr.close();
 	}
 }
 
 void MailMessage() :
 	{
 	  PrintWriter msgstr = null;
-	  Token subj=null, from=null, date=null, body;
+      Token subj = null, from = null, date = null, body;
 	  if (count >= beginAt) {
 	    try {
 	      msgstr = new PrintWriter(new FileWriter(count + ".html"));
@@ -115,11 +118,11 @@ void MailMessage() :
 {
   ( subj=<SUBJECT> | from=<FROM> | date=<DATE> )+
 	{
-	  indstr.print("<a href=\"" + count + ".html\">");
+	  ixstr.print("<a href=\"" + count + ".html\">");
 	  if (subj == null) {
-	    indstr.println("no subject</a><br>");
+	    ixstr.println("no subject</a><br>");
 	  } else {
-	    indstr.println(fix(subj.image) + "</a><br>");
+	    ixstr.println(fix(subj.image) + "</a><br>");
 	  }
 	  if (count >= beginAt) {
 	    msgstr.println("<title>" + ((subj==null) ? "no subject" : fix(subj.image)) + "</title>");
@@ -129,12 +132,13 @@ void MailMessage() :
             msgstr.println("<br>");
 	  }
 	}
-  ( body=<BODY>
-	{
-	  if (count >= beginAt) {
-	    msgstr.print(fix(body.image) + "<br>");
-	  }
-	}
+  (
+    body = <BODY>
+    {
+      if (count >= beginAt) {
+        msgstr.print(fix(body.image) + "<br>");
+      }
+    }
   )*
   <END>
 	{
