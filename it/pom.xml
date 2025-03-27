@@ -12,7 +12,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the names of of the copyright holders nor the names of its
+    * Neither the names of the copyright holders nor the names of its
       contributors may be used to endorse or promote products derived from
       this software without specific prior written permission.
 
@@ -47,23 +47,123 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
   <name>JavaCC C# code generator / it</name>
 
-  <repositories>
-    <repository>
-      <id>dotnet-tools</id>
-      <url>https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/maven/v1</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
+  <!--
+       ment to be called by maven-invoker-plugin from javacc-8-c#/pom.xml,
+       note: parent is javacc-8/pom.xml, not javacc-8-c#/pom.xml
+       defines non herited settings (help) and specific settings (codeGenerator, profiles)
+  -->
 
   <properties>
-    <javacc.csharp>8.0.1-SNAPSHOT</javacc.csharp>
-    <plexus-compiler-csharp>2.15.0</plexus-compiler-csharp>
+    <mojohaus.build-helper-maven-plugin.version>3.6.0</mojohaus.build-helper-maven-plugin.version>
+    <plexus-compiler-csharp.version>2.15.0</plexus-compiler-csharp.version>
   </properties>
+
+  <build>
+    <pluginManagement>
+
+      <!-- all in parent javacc-8/pom.xml except the following ones -->
+
+      <plugins>
+        <plugin>
+          <!-- processes JavaCC/JJTree grammar files;
+               goals: javacc, jjtree-javacc, jjtree -->
+          <groupId>org.javacc.plugin</groupId>
+          <artifactId>javacc-maven-plugin</artifactId>
+          <dependencies>
+            <!-- uses v8 C:# generator; overriden in v7 profiles -->
+            <dependency>
+              <groupId>org.javacc.generator</groupId>
+              <artifactId>csharp</artifactId>
+              <version>${javacc.csharp.version}</version>
+              <scope>runtime</scope>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+        <plugin>
+          <!-- assists the build lifecyle;
+               here use goal add-source to add the csharp source folders -->
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>${mojohaus.build-helper-maven-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <!-- allows to compile C# code on different architectures with different compilers/linkers -->
+          <!-- standard maven lifecycle -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-compiler-csharp</artifactId>
+              <version>${plexus-compiler-csharp.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.javacc.plugin</groupId>
+        <artifactId>javacc-maven-plugin</artifactId>
+        <configuration>
+          <codeGenerator>c#</codeGenerator>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <!-- assists the build lifecyle; here use goal add-source to add the csharp source folders -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <!-- after (javacc) generate-sources but before (javac) compile -->
+            <phase>process-resources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/main/csharp</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <!-- allows to compile C# code on different architectures with different compilers/linkers -->
+        <!-- standard maven lifecycle -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <!-- setting compileSourceRoots to src/main/chsarp,target/gen.../csharp makes the plugin
+             compile twice the .cs, in phases default-compile and default-testCompile to
+             target/classes and target/test-classes; so used the build-helper-maven-plugin -->
+          <compilerId>csharp</compilerId>
+          <!-- unfortunately the build does not fail on errors... -->
+          <failOnError>true</failOnError>
+          <fork>true</fork>
+          <verbose>true</verbose>
+          <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
+          <compilerArguments>
+            <nologo>true</nologo>
+            <target>exe</target>
+            <out>${project.artifactId}.exe</out>
+            <!--  unfortunately compiler options PreferredUILang & Utf8Output not supported
+            https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
+          </compilerArguments>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
 
   <profiles>
 
@@ -104,6 +204,71 @@ THE POSSIBILITY OF SUCH DAMAGE.
     </profile>
 
     <profile>
+      <!-- JJTree/JavaCC project compiled with JavaCC v8; implicitely activated -->
+      <id>jjt8</id>
+      <activation>
+        <file>
+          <exists>${basedir}/src/main/jjtree</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.javacc.plugin</groupId>
+            <artifactId>javacc-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jjt8-jjt-jjc</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>jjtree-javacc</goal>
+                </goals>
+                <configuration>
+                  <codeGenerator>c#</codeGenerator>
+                  <sourceDirectory>src/main/jjtree</sourceDirectory>
+                  <nodeDirectory>target/generated-sources/jjtree</nodeDirectory>
+                  <!--
+                  <nodeDirectory>src/main/java</nodeDirectory>
+                  -->
+                  <outputDirectory>target/generated-sources/java</outputDirectory>
+                  <!-- generated nodes in target dir because no custom nodes
+                     - and the plugin will copy them there! -->
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${maven-compiler-plugin.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-compiler-csharp</artifactId>
+                <version>${plexus-compiler-csharp.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <compilerId>csharp</compilerId>
+              <!--              <failOnError>false</failOnError>-->
+              <fork>true</fork>
+              <verbose>true</verbose>
+              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
+              <compilerArguments>
+                <nologo>true</nologo>
+                <target>exe</target>
+                <out>${project.artifactId}.exe</out>
+                <!--  unfortunately compiler options PreferredUILang & Utf8Output not supported
+                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
+              </compilerArguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <!-- JavaCC project compiled with JavaCC v8; implicitely activated -->
       <id>jcc8</id>
       <activation>
         <file>
@@ -122,20 +287,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <groupId>org.javacc.generator</groupId>
                   <artifactId>csharp</artifactId>
                   <version>${javacc.csharp.version}</version>
-                  <!--                  <scope>runtime</scope>-->
-                </dependency>
-              </dependencies>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <version>${maven-compiler-plugin.version}</version>
-              <dependencies>
-                <dependency>
-                  <groupId>org.codehaus.plexus</groupId>
-                  <artifactId>plexus-compiler-csharp</artifactId>
-                  <version>${plexus-compiler-csharp.version}</version>
-                  <!--                  <scope>runtime</scope>-->
+                  <scope>runtime</scope>
                 </dependency>
               </dependencies>
             </plugin>
@@ -153,9 +305,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <goal>javacc</goal>
                 </goals>
                 <configuration>
-                  <outputDirectory>${project.basedir}/target/generated-sources/csharp</outputDirectory>
-                  <sourceDirectory>${project.basedir}/src/main/javacc</sourceDirectory>
-                  <codeGenerator>c#</codeGenerator>
+                  <sourceDirectory>src/main/javacc</sourceDirectory>
+                  <outputDirectory>target/generated-sources/csharp</outputDirectory>
                 </configuration>
               </execution>
             </executions>
@@ -171,127 +322,17 @@ THE POSSIBILITY OF SUCH DAMAGE.
               </dependency>
             </dependencies>
             <configuration>
-              <verbose>true</verbose>
+              <compilerId>csharp</compilerId>
               <!--              <failOnError>false</failOnError>-->
-              <compilerId>csharp</compilerId>
               <fork>true</fork>
-              <!-- buggy [WARNING]  Parameter 'compilerArguments' is deprecated: use compilerArgs
-              instead.-->
-              <compilerArguments>
-                <!-- unfortunately compiler options PreferredUILang & Utf8Output not supoorted
-                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
-                <out>${project.artifactId}.exe</out>
-                <target>exe</target>
-                <nologo>true</nologo>
-              </compilerArguments>
-            </configuration>
-          </plugin>
-          <!-- probably an old attempt to use another way to compile -->
-          <!--
-            <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>jcc8-dotnet-new</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <exec dir="${project.basedir}/target/generated-sources/java"
-                      executable="dotnet.exe">
-                      <arg line="new classlib" />
-                    </exec>
-                    <exec dir="${project.basedir}/target/generated-sources/java"
-                      executable="dotnet.exe"
-                      failonerror="true">
-                      <arg line="build" />
-                    </exec>
-                  </target>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          -->
-
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>jjt8</id>
-      <activation>
-        <file>
-          <exists>${basedir}/src/main/jjtreeXXXX</exists>
-<!--          <missing>${basedir}/src/main/jjtree/*/*.jjt</missing>-->
-        </file>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.javacc.plugin</groupId>
-              <artifactId>javacc-maven-plugin</artifactId>
-              <dependencies>
-                <dependency>
-                  <groupId>org.javacc.generator</groupId>
-                  <artifactId>csharp</artifactId>
-                  <version>${javacc.csharp.version}</version>
-                  <!--                  <scope>runtime</scope>-->
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.javacc.plugin</groupId>
-            <artifactId>javacc-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>jjt8jjt</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>jjtree-javacc</goal>
-                </goals>
-                <configuration>
-                  <sourceDirectory>${project.basedir}/src/main/jjtree</sourceDirectory>
-                  <outputDirectory>${project.basedir}/target/generated-sources/java</outputDirectory>
-                  <!-- generated nodes in target dir because no custom nodes
-                     - and the plugin will copy them there! -->
-                  <nodeDirectory>${project.basedir}/target/generated-sources/jjtree</nodeDirectory>
-                  <!--
-                  <nodeDirectory>${project.basedir}/src/main/java</nodeDirectory>
-                  -->
-                  <codeGenerator>c#</codeGenerator>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>${maven-compiler-plugin.version}</version>
-            <dependencies>
-              <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-compiler-csharp</artifactId>
-                <version>${plexus-compiler-csharp.version}</version>
-              </dependency>
-            </dependencies>
-            <configuration>
-              <compilerId>csharp</compilerId>
               <verbose>true</verbose>
-              <fork>true</fork>
-              <!-- buggy [WARNING]  Parameter 'compilerArguments' is deprecated: use compilerArgs
-              instead.-->
+              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
               <compilerArguments>
-                <!-- unfortunately compiler options PreferredUILang & Utf8Output not supoorted
-                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
-                <out>${project.artifactId}.exe</out>
-                <target>exe</target>
                 <nologo>true</nologo>
+                <target>exe</target>
+                <out>${project.artifactId}.exe</out>
+                <!--  unfortunately compiler options PreferredUILang & Utf8Output not supported
+                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
               </compilerArguments>
             </configuration>
           </plugin>
@@ -330,10 +371,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <goal>jjtree-javacc</goal>
                 </goals>
                 <configuration>
-                  <outputDirectory>${project.basedir}/target/generated-sources/java</outputDirectory>
-                  <sourceDirectory>${project.basedir}/src/main/jjtree</sourceDirectory>
-                  <nodeDirectory>${project.basedir}/src/main/java</nodeDirectory>
-                  <codeGenerator>c#</codeGenerator>
+                  <outputDirectory>target/generated-sources/java</outputDirectory>
+                  <sourceDirectory>src/main/jjtree</sourceDirectory>
+                  <nodeDirectory>src/main/java</nodeDirectory>
                 </configuration>
               </execution>
             </executions>
@@ -353,14 +393,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <compilerId>csharp</compilerId>
               <verbose>true</verbose>
               <fork>true</fork>
-              <!-- buggy [WARNING]  Parameter 'compilerArguments' is deprecated: use compilerArgs
-              instead.-->
+              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
               <compilerArguments>
-                <!-- unfortunately compiler options PreferredUILang & Utf8Output not supoorted
-                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
-                <out>${project.artifactId}.exe</out>
-                <target>exe</target>
                 <nologo>true</nologo>
+                <target>exe</target>
+                <out>${project.artifactId}.exe</out>
+                <!--  unfortunately compiler options PreferredUILang & Utf8Output not supported
+                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
               </compilerArguments>
             </configuration>
           </plugin>
@@ -368,172 +407,6 @@ THE POSSIBILITY OF SUCH DAMAGE.
       </build>
     </profile>
 
-    <!-- old versions -->
-    <!--
-    <profile>
-      <id>jcc7</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.javacc.plugin</groupId>
-              <artifactId>javacc-maven-plugin</artifactId>
-              <dependencies>
-                <dependency>
-                  <groupId>net.java.dev.javacc</groupId>
-                  <artifactId>javacc</artifactId>
-                  <version>7.0.6</version>
-                                    <scope>runtime</scope>
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.javacc.plugin</groupId>
-            <artifactId>javacc-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>jcc7jcc</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>javacc</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>target/generated-sources/java</outputDirectory>
-                  <outputLanguage>C#</outputLanguage>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>jcc7w</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.javacc.plugin</groupId>
-              <artifactId>javacc-maven-plugin</artifactId>
-              <dependencies>
-                <dependency>
-                  <groupId>net.java.dev.javacc</groupId>
-                  <artifactId>javacc</artifactId>
-                  <version>7.0.6</version>
-                                    <scope>runtime</scope>
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.javacc.plugin</groupId>
-            <artifactId>javacc-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>jcc7wjcc</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>javacc</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>target/generated-sources/java</outputDirectory>
-                  <outputLanguage>C#</outputLanguage>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>jjt7</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.javacc.plugin</groupId>
-              <artifactId>javacc-maven-plugin</artifactId>
-              <dependencies>
-                <dependency>
-                  <groupId>net.java.dev.javacc</groupId>
-                  <artifactId>javacc</artifactId>
-                  <version>7.0.6</version>
-                                    <scope>runtime</scope>
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.javacc.plugin</groupId>
-            <artifactId>javacc-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>jjt7jjt</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>jjtree-javacc</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>target/generated-sources/java</outputDirectory>
-                  <outputLanguage>C#</outputLanguage>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>jjt7w</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.javacc.plugin</groupId>
-              <artifactId>javacc-maven-plugin</artifactId>
-              <dependencies>
-                <dependency>
-                  <groupId>net.java.dev.javacc</groupId>
-                  <artifactId>javacc</artifactId>
-                  <version>7.0.6</version>
-                                    <scope>runtime</scope>
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.javacc.plugin</groupId>
-            <artifactId>javacc-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>jjt7wjjt</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>jjtree-javacc</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>target/generated-sources/java</outputDirectory>
-                  <outputLanguage>C#</outputLanguage>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
--->
     <profile>
       <!-- maven-compiler-plugin with plexus-compiler-csharp:  2024/07
            they assume the path to csc.exe is in the %PATH%;
@@ -580,14 +453,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <compilerId>csharp</compilerId>
               <fork>true</fork>
               <executable>${env.CSCCOMPILERDIR}\csc.exe</executable>
-              <!-- buggy [WARNING]  Parameter 'compilerArguments' is deprecated: use compilerArgs
-              instead.-->
+              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
               <compilerArguments>
-                <!-- unfortunately compiler options PreferredUILang & Utf8Output not supoorted
-                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
-                <out>${project.artifactId}.exe</out>
-                <target>exe</target>
                 <nologo>true</nologo>
+                <target>exe</target>
+                <out>${project.artifactId}.exe</out>
               </compilerArguments>
             </configuration>
           </plugin>

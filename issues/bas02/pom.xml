@@ -12,7 +12,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the names of of the copyright holders nor the names of its
+    * Neither the names of the copyright holders nor the names of its
       contributors may be used to endorse or promote products derived from
       this software without specific prior written permission.
 
@@ -35,27 +35,27 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
   <parent>
     <groupId>org.javacc.generator.csharp</groupId>
-    <artifactId>bugs</artifactId>
+    <artifactId>issues</artifactId>
     <version>1.1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.javacc.generator.csharp.bugs</groupId>
-  <artifactId>bug002</artifactId>
+  <groupId>org.javacc.generator.csharp.issues</groupId>
+  <artifactId>bas02</artifactId>
   <packaging>jar</packaging>
 
-  <name>JavaCC C# code generator / bugs / bug002</name>
+  <name>JavaCC C# code generator / issues / bas02</name>
 
   <build>
     <plugins>
-    
+
       <!-- clear the tests results files -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <executions>
           <execution>
-            <id>clear-res</id>
-            <phase>test</phase>
+            <id>clear-res-test</id>
+            <phase>process-test-resources</phase>
             <goals>
               <goal>clean</goal>
             </goals>
@@ -63,9 +63,10 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <excludeDefaultDirectories>true</excludeDefaultDirectories>
               <filesets>
                 <fileset>
-                  <directory>test</directory>
+                  <directory>files</directory>
                   <includes>
-                    <include>*.out, *.err</include>
+                    <include>*.out</include>
+                    <include>*.err</include>
                   </includes>
                 </fileset>
               </filesets>
@@ -80,64 +81,88 @@ THE POSSIBILITY OF SUCH DAMAGE.
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>exec-1</id>
+            <id>exec-test-1</id>
             <phase>test</phase>
             <goals>
               <goal>exec</goal>
             </goals>
+            <configuration>
+              <skip>${skip.test.csharp.issues.bas02}</skip> <!-- default false -->
+              <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
+              <arguments>
+                <argument>${project.basedir}/files/bug1.in</argument>
+                <argument>${project.basedir}/files/bug1.out</argument>
+                <argument>${project.basedir}/files/bug1.err</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>exec-test-2</id>
+            <phase>test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <skip>${skip.test.csharp.issues.bas02}</skip> <!-- default false -->
+              <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
+              <arguments>
+                <argument>${project.basedir}/files/bug2.in</argument>
+                <argument>${project.basedir}/files/bug2.out</argument>
+                <argument>${project.basedir}/files/bug2.err</argument>
+              </arguments>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
-          <arguments>
-            <argument>${project.basedir}/files/bug.in</argument>
-            <argument>${project.basedir}/files/bug.out</argument>
-            <argument>${project.basedir}/files/bug.err</argument>
-          </arguments>
-        </configuration>
       </plugin>
-      
+
       <!-- check the tests results -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>check-res-1</id>
+            <id>check-res-test-1</id>
             <phase>test</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
-              <target unless="maven.test.skip">
+              <skip>${skip.test.csharp.issues.bas02}</skip> <!-- default false -->
+              <failOnError>${failOnError.check.csharp.issues.bas02}</failOnError> <!-- default true -->
+              <target>
                 <!-- out -->
-                <available file="${project.basedir}/files/bug.out" property="isActualOutAvailable" />
-                <fail unless="isActualOutAvailable"
-                  message="${project.basedir}/files/bug.out does not exist!" />
-                <available file="${project.basedir}/files/bug.exp_out"
-                  property="isExpectedOutAvailable" />
-                <fail unless="isExpectedOutAvailable"
-                  message="${project.basedir}/files/bug.exp_out does not exist!" />
-                <condition property="out.files.match">
-                  <filesmatch textfile="true" file1="${project.basedir}/files/bug.out"
-                    file2="${project.basedir}/files/bug.exp_out" />
-                </condition>
-                <fail unless="out.files.match"
-                  message="${project.basedir}/files/bug.out does not match ${project.basedir}/files/bug.exp_out!" />
+                <ant antfile="${project.basedir}/../../it/build-utils.xml" target="compare-out">
+                  <property name="dir" value="${project.basedir}" />
+                  <property name="file" value="bug1" />
+                </ant>
                 <!-- err -->
-                <available file="${project.basedir}/files/bug.err" property="isActualErrAvailable" />
-                <fail unless="isActualErrAvailable"
-                  message="${project.basedir}/files/bug.err does not exist!" />
-                <available file="${project.basedir}/files/bug.exp_err"
-                  property="isExpectedErrAvailable" />
-                <fail unless="isExpectedErrAvailable"
-                  message="${project.basedir}/files/bug.exp_err does not exist!" />
-                <condition property="err.files.match">
-                  <filesmatch textfile="true" file1="${project.basedir}/files/bug.err"
-                    file2="${project.basedir}/files/bug.exp_err" />
-                </condition>
-                <fail unless="err.files.match"
-                  message="${project.basedir}/files/bug.err does not match ${project.basedir}/files/bug.exp_err!" />
+                <ant antfile="${project.basedir}/../../it/build-utils.xml" target="compare-err">
+                  <property name="dir" value="${project.basedir}" />
+                  <property name="file" value="bug1" />
+                </ant>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
+            <id>check-res-test-2</id>
+            <phase>test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <skip>${skip.test.csharp.issues.bas02}</skip> <!-- default false -->
+              <failOnError>${failOnError.check.csharp.issues.bas02}</failOnError> <!-- default true -->
+              <target>
+                <!-- out -->
+                <ant antfile="${project.basedir}/../../it/build-utils.xml" target="compare-out">
+                  <property name="dir" value="${project.basedir}" />
+                  <property name="file" value="bug2" />
+                </ant>
+                <!-- err -->
+                <ant antfile="${project.basedir}/../../it/build-utils.xml" target="compare-err">
+                  <property name="dir" value="${project.basedir}" />
+                  <property name="file" value="bug2" />
+                </ant>
               </target>
             </configuration>
           </execution>

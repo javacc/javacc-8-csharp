@@ -12,7 +12,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the names of of the copyright holders nor the names of its
+    * Neither the names of the copyright holders nor the names of its
       contributors may be used to endorse or promote products derived from
       this software without specific prior written permission.
 
@@ -47,15 +47,15 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
   <build>
     <plugins>
-    
+
       <!-- clear the tests results files -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <executions>
           <execution>
-            <id>clear-res</id>
-            <phase>test</phase>
+            <id>clear-res-test</id>
+            <phase>process-test-resources</phase>
             <goals>
               <goal>clean</goal>
             </goals>
@@ -65,7 +65,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 <fileset>
                   <directory>files</directory>
                   <includes>
-                    <include>*.out,*.out.html</include>
+                    <include>cpy.*,*.out,*.out.html</include>
                   </includes>
                 </fileset>
               </filesets>
@@ -74,19 +74,70 @@ THE POSSIBILITY OF SUCH DAMAGE.
         </executions>
       </plugin>
 
+      <!-- compile and link distinct executables -->
+      <plugin>
+        <!-- allows to compile C# code on different architectures with different compilers/linkers -->
+        <!-- standard maven lifecycle -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <!-- setting compileSourceRoots to src/main/chsarp,target/gen.../csharp makes the plugin
+             compile twice the .cs, in phases default-compile and default-testCompile to
+             target/classes and target/test-classes; so used the build-helper-maven-plugin -->
+          <compilerId>csharp</compilerId>
+          <!-- unfortunately the build does not fail on errors... -->
+          <failOnError>true</failOnError>
+          <fork>true</fork>
+          <verbose>true</verbose>
+        </configuration>
+        <executions>
+        <!-- strange way to define 2 executions not exactly in the same manner (id, goal, phase) -->
+          <execution>
+            <id>default-compile</id>
+            <configuration>
+              <compileSourceRoots>src/main/csharp/dig,target/generated-sources/csharp/dig</compileSourceRoots>
+              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
+              <compilerArguments>
+                <nologo>true</nologo>
+                <target>exe</target>
+                <out>${project.artifactId}-digest.exe</out>
+              </compilerArguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>comp-Faq</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <compileSourceRoots>src/main/csharp/faq,target/generated-sources/csharp/faq</compileSourceRoots>
+              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
+              <compilerArguments>
+                <nologo>true</nologo>
+                <target>exe</target>
+                <out>${project.artifactId}-faq.exe</out>
+              </compilerArguments>
+            </configuration>
+        </execution>
+        </executions>
+      </plugin>
+
+
       <!-- execute the tests -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>exec-Digest-1</id>
+            <id>exec-Digest-test</id>
             <phase>test</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
-              <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
+              <skip>${skip.test.csharp.examples.MailProcessing.Digest}</skip> <!-- default false -->
+              <executable>${project.basedir}/target/classes/${project.artifactId}-digest.exe</executable>
               <arguments>
                 <argument>${project.basedir}/files/sampleMailFile.in</argument>
                 <argument>${project.basedir}/files/digestFile.out</argument>
@@ -94,13 +145,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
             </configuration>
           </execution>
           <execution>
-            <id>exec-Faq-2</id>
+            <id>exec-Faq-test</id>
             <phase>test</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
-              <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
+              <skip>${skip.test.csharp.examples.MailProcessing.Faq}</skip> <!-- default false -->
+              <executable>${project.basedir}/target/classes/${project.artifactId}-faq.exe</executable>
               <arguments>
                 <argument>1</argument>
                 <argument>${project.basedir}/files/sampleMailFile.in</argument>
@@ -110,7 +162,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
           </execution>
         </executions>
       </plugin>
-      
+
 
       <!-- check the tests results -->
       <plugin>
@@ -118,92 +170,57 @@ THE POSSIBILITY OF SUCH DAMAGE.
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>check-Digest-1</id>
+            <id>check-Digest-test</id>
             <phase>test</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
-              <skip>false</skip>
-              <target unless="maven.test.skip">
+              <skip>${skip.test.csharp.examples.MailProcessing.Digest}</skip> <!-- default false -->
+              <failOnError>${failOnError.check.csharp.examples.MailProcessing.Digest}</failOnError>
+              <target>
                 <!-- out -->
-                <available file="${project.basedir}/files/digestFile.out" property="isActualOutAvailable" />
-                <fail unless="isActualOutAvailable"
-                  message="${project.basedir}/files/digestFile.out does not exist!" />
-                <available file="${project.basedir}/files/digestFile.exp_out"
-                  property="isExpectedOutAvailable" />
-                <fail unless="isExpectedOutAvailable"
-                  message="${project.basedir}/files/digestFile.exp_out does not exist!" />
-                <condition property="out.files.match">
-                  <filesmatch textfile="true" file1="${project.basedir}/files/digestFile.out"
-                    file2="${project.basedir}/files/digestFile.exp_out" />
-                </condition>
-                <fail unless="out.files.match"
-                  message="${project.basedir}/files/digestFile.out does not match ${project.basedir}/files/digestFile.exp_out!" />
+                <ant antfile="${project.basedir}/../../it/build-utils.xml" target="compare-out">
+                  <property name="dir" value="${project.basedir}" />
+                  <property name="file" value="digestFile" />
+                </ant>
               </target>
             </configuration>
           </execution>
           <execution>
-            <id>check-Faq-2</id>
+            <id>check-Faq-test</id>
             <phase>test</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
-              <skip>false</skip>
-              <target unless="maven.test.skip">
+              <skip>${skip.test.csharp.examples.MailProcessing.Faq}</skip> <!-- default false -->
+              <failOnError>${failOnError.check.csharp.examples.MailProcessing.Faq}</failOnError>
+              <target>
                 <!-- out index.out.html -->
-                <available file="${project.basedir}/files/index.out.html" property="isActualAvailable" />
-                <fail unless="isActualAvailable"
-                  message="${project.basedir}/files/index.out.html does not exist!" />
-                <available file="${project.basedir}/files/index.exp_out.html" property="isExpectedAvailable" />
-                <fail unless="isExpectedAvailable"
-                  message="${project.basedir}/files/index.exp_out.html does not exist!" />
-                <condition property="files.match">
-                  <filesmatch textfile="true" file1="${project.basedir}/files/index.out.html"
-                    file2="${project.basedir}/files/index.exp_out.html" />
-                </condition>
-                <fail unless="files.match"
-                  message="${project.basedir}/files/index.out.html does not match ${project.basedir}/files/index.exp_out.html!" />
+                <ant antfile="${project.basedir}/../../it/build-utils.xml" target="compare-any">
+                  <property name="dir" value="${project.basedir}" />
+                  <property name="actual" value="index.out.html" />
+                  <property name="expected" value="index.exp_out.html" />
+                </ant>
                 <!-- out 1.out.html -->
-                <available file="${project.basedir}/files/1.out.html" property="isActualAvailable" />
-                <fail unless="isActualAvailable"
-                  message="${project.basedir}/files/1.out.html does not exist!" />
-                <available file="${project.basedir}/files/1.exp_out.html" property="isExpectedAvailable" />
-                <fail unless="isExpectedAvailable"
-                  message="${project.basedir}/files/1.exp_out.html does not exist!" />
-                <condition property="files.match">
-                  <filesmatch textfile="true" file1="${project.basedir}/files/1.out.html"
-                    file2="${project.basedir}/files/1.exp_out.html" />
-                </condition>
-                <fail unless="files.match"
-                  message="${project.basedir}/files/1.out.html does not match ${project.basedir}/files/1.exp_out.html!" />
+                <ant antfile="${project.basedir}/../../it/build-utils.xml" target="compare-any">
+                  <property name="dir" value="${project.basedir}" />
+                  <property name="actual" value="1.out.html" />
+                  <property name="expected" value="1.exp_out.html" />
+                </ant>
                 <!-- out 2.out.html -->
-                <available file="${project.basedir}/files/2.out.html" property="isActualAvailable" />
-                <fail unless="isActualAvailable"
-                  message="${project.basedir}/files/2.out.html does not exist!" />
-                <available file="${project.basedir}/files/2.exp_out.html" property="isExpectedAvailable" />
-                <fail unless="isExpectedAvailable"
-                  message="${project.basedir}/files/2.exp_out.html does not exist!" />
-                <condition property="files.match">
-                  <filesmatch textfile="true" file1="${project.basedir}/files/2.out.html"
-                    file2="${project.basedir}/files/2.exp_out.html" />
-                </condition>
-                <fail unless="files.match"
-                  message="${project.basedir}/files/2.out.html does not match ${project.basedir}/files/2.exp_out.html!" />
+                <ant antfile="${project.basedir}/../../it/build-utils.xml" target="compare-any">
+                  <property name="dir" value="${project.basedir}" />
+                  <property name="actual" value="2.out.html" />
+                  <property name="expected" value="2.exp_out.html" />
+                </ant>
                 <!-- out 3.out.html -->
-                <available file="${project.basedir}/files/3.out.html" property="isActualAvailable" />
-                <fail unless="isActualAvailable"
-                  message="${project.basedir}/files/3.out.html does not exist!" />
-                <available file="${project.basedir}/files/3.exp_out.html" property="isExpectedAvailable" />
-                <fail unless="isExpectedAvailable"
-                  message="${project.basedir}/files/3.exp_out.html does not exist!" />
-                <condition property="files.match">
-                  <filesmatch textfile="true" file1="${project.basedir}/files/3.out.html"
-                    file2="${project.basedir}/files/3.exp_out.html" />
-                </condition>
-                <fail unless="files.match"
-                  message="${project.basedir}/files/3.out.html does not match ${project.basedir}/files/3.exp_out.html!" />
+                <ant antfile="${project.basedir}/../../it/build-utils.xml" target="compare-any">
+                  <property name="dir" value="${project.basedir}" />
+                  <property name="actual" value="3.out.html" />
+                  <property name="expected" value="3.exp_out.html" />
+                </ant>
               </target>
             </configuration>
           </execution>
