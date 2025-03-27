@@ -11,7 +11,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the names of of the copyright holders nor the names of its
+ *     * Neither the names of the copyright holders nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
  *
@@ -34,6 +34,7 @@ import org.javacc.jjtree.JJTreeContext;
 import org.javacc.parser.CodeGeneratorSettings;
 import org.javacc.parser.Context;
 import org.javacc.parser.JavaCCGlobals;
+import org.javacc.parser.Options;
 import org.javacc.parser.TokenizerData;
 import org.javacc.utils.CodeBuilder.GenericCodeBuilder;
 
@@ -51,33 +52,23 @@ public class CodeGenerator implements org.javacc.parser.CodeGenerator {
       final Context context,
       final CodeGeneratorSettings settings,
       final TokenizerData tokenizerData) {
-    final File directory = new File((String) settings.get("OUTPUT_DIRECTORY"));
+    final File directory = new File((String) settings.get(Options.UO__OUTPUT_DIRECTORY));
     try {
       try (GenericCodeBuilder gcb = GenericCodeBuilder.of(context, settings)) {
-        gcb.setFile(new File(directory, "CharStream.cs"));
-        gcb
-            .addTools(JavaCCGlobals.toolName)
-            .printTemplate("/templates/csharp/CharStream.template");
-      }
-
-      try (GenericCodeBuilder gcb = GenericCodeBuilder.of(context, settings)) {
+        gcb.addTools(JavaCCGlobals.toolName);
         gcb.setFile(new File(directory, "TokenMgrError.cs"));
-        gcb
-            .addTools(JavaCCGlobals.toolName)
-            .printTemplate("/templates/csharp/TokenMgrError.template");
-      }
-
-      try (GenericCodeBuilder gcb = GenericCodeBuilder.of(context, settings)) {
-        gcb.setFile(new File(directory, "ParseException.cs"));
-        gcb
-            .addTools(JavaCCGlobals.toolName)
-            .printTemplate("/templates/csharp/ParseException.template");
+        gcb.printTemplate("/templates/csharp/TokenMgrError.template");
       }
 
       try (GenericCodeBuilder gcb = GenericCodeBuilder.of(context, settings)) {
         gcb.addTools(JavaCCGlobals.toolName);
+        gcb.setFile(new File(directory, "ParseException.cs"));
+        gcb.printTemplate("/templates/csharp/ParseException.template");
+      }
 
-        if ((Boolean) settings.get("JAVA_UNICODE_ESCAPE")) {
+      try (GenericCodeBuilder gcb = GenericCodeBuilder.of(context, settings)) {
+        gcb.addTools(JavaCCGlobals.toolName);
+        if ((Boolean) settings.get(Options.UO__JAVA_UNICODE_ESCAPE)) {
           gcb.setFile(new File(directory, "JavaCharStream.cs"));
           gcb.printTemplate("/templates/csharp/JavaCharStream.template");
         } else {
@@ -88,7 +79,6 @@ public class CodeGenerator implements org.javacc.parser.CodeGenerator {
     } catch (final Exception e) {
       return false;
     }
-
     return true;
   }
 

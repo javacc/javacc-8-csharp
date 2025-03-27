@@ -27,129 +27,87 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-PARSER_BEGIN(Faq)
-
-// care: the line package, even if in comment, will be used!
-/*
-pac-kage faq;
-
-import java.io.*;
-
-public class Faq {
-
-  static int count = 0;
-
-  static int beginAt = 1;
-
-  static PrintWriter ixstr;
-
-  static {
-    try {
-      ixstr = new PrintWriter(new FileWriter("index.html"));
-      ixstr.println("<title>Selected list of emails from the JavaCC mailing list</title>");
-      ixstr.println("<h2>Selected list of emails from the JavaCC mailing list</h2>");
-    } catch (IOException e) {
-      throw new Error();
-    }
-  }
-
-  static String fix(String s) {
-    String retval = "";
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if (c == '<') {
-        retval += "&lt;";
-      } else if (c == '>') {
-        retval += "&gt;";
-      } else {
-        retval += c;
-      }
-    }
-    return retval;
-  }
-
-  public static void main(String args[]) throws ParseException, FileNotFoundException {
-    if (args.length >= 1) {
-      beginAt = Integer.parseInt(args[0]);
-    }
-    Faq parser = new Faq(new FileInputStream(args[1]));
-    parser.MailFile();
-  }
-
+options
+{
+  STATIC = true; // JavaCC's default; not the same as Digest
+  NAMESPACE = "FAQ";
 }
-*/
+
+PARSER_BEGIN(Faq)
+// ugly hack to make javacc generate under a subdirectory
+// package faq;
+
+  static int count = FaqMain.count;
+  static int beginAt = FaqMain.beginAt;
+  static System.String outdir = FaqMain.outdir;
+  static System.IO.StreamWriter indexsw = FaqMain.indexsw;
+
 PARSER_END(Faq)
 
-
-// PARSER SPECIFICATIONS BEGIN HERE
-
 void MailFile() :
-	{
-	}
+{ System.Console.Out.Write("Faq: "); }
 {
   (
-	{
-	  count++;
-	}
+    { count++; }
     MailMessage()
-	{
-	  System.Console.WriteLine(count + ".");
-	}
+    { System.Console.Out.Write(count + ". "); }
   )*
   <EOF>
-	{
-	  System.Console.WriteLine("");
-	  ixstr.close();
-	}
+  {
+    System.Console.Out.WriteLine("");
+    indexsw.Close();
+  }
 }
 
 void MailMessage() :
-	{
-	  PrintWriter msgstr = null;
-      Token subj = null, from = null, date = null, body;
-	  if (count >= beginAt) {
-	    try {
-	      msgstr = new PrintWriter(new FileWriter(count + ".html"));
-	    } catch (IOException e) {
-	      throw new Error();
-	    }
-	  }
-	}
 {
-  ( subj=<SUBJECT> | from=<FROM> | date=<DATE> )+
-	{
-	  ixstr.print("<a href=\"" + count + ".html\">");
-	  if (subj == null) {
-	    ixstr.println("no subject</a><br>");
-	  } else {
-	    ixstr.println(fix(subj.image) + "</a><br>");
-	  }
-	  if (count >= beginAt) {
-	    msgstr.println("<title>" + ((subj==null) ? "no subject" : fix(subj.image)) + "</title>");
-	    msgstr.println("Subject: " + ((subj==null) ? "no subject" : fix(subj.image)) + "<br>");
-	    msgstr.println("From: " + ((from==null) ? "" : fix(from.image)) + "<br>");
-	    msgstr.println("Date: " + ((date==null) ? "" : fix(date.image)) + "<br>");
-            msgstr.println("<br>");
-	  }
-	}
+  System.IO.StreamWriter msgsw = null;
+  Token subj = null, from = null, date = null, body;
+  if (count >= beginAt) {
+    try {
+      msgsw = new System.IO.StreamWriter(outdir + "/" + count + ".out.html");
+    } catch (System.IO.IOException e) {
+      System.Console.Error.WriteLine("IOE on " +outdir + "/" + count + ".out.html");
+      System.Console.Error.WriteLine(System.Environment.StackTrace);
+      System.Environment.Exit(4);
+    }
+  } else {
+    System.Console.Error.WriteLine("count (" + count + ") < beginAt (" + beginAt + ")");
+    return;
+  }
+}
+{
+  ( subj = <SUBJECT> | from = <FROM> | date = <DATE> )+
+  {
+    indexsw.Write("<a href=\"" + count + ".html\">");
+    if (subj == null) {
+      indexsw.WriteLine("no subject</a><br>");
+    } else {
+      indexsw.WriteLine(FaqMain.fix(subj.image) + "</a><br>");
+    }
+    if (count >= beginAt) {
+      msgsw.WriteLine("<title>" + ((subj==null) ? "no subject" : FaqMain.fix(subj.image)) + "</title>");
+      msgsw.WriteLine("Subject: " + ((subj==null) ? "no subject" : FaqMain.fix(subj.image)) + "<br>");
+      msgsw.WriteLine("From: " + ((from==null) ? "" : FaqMain.fix(from.image)) + "<br>");
+      msgsw.WriteLine("Date: " + ((date==null) ? "" : FaqMain.fix(date.image)) + "<br>");
+      msgsw.WriteLine("<br>");
+    }
+  }
   (
     body = <BODY>
     {
       if (count >= beginAt) {
-        msgstr.print(fix(body.image) + "<br>");
+        msgsw.Write(FaqMain.fix(body.image) + "<br>");
       }
     }
   )*
   <END>
-	{
-	  if (count >= beginAt) {
-	    msgstr.close();
-	  }
-	}
+  {
+    if (count >= beginAt) {
+      msgsw.Close();
+    }
+  }
 }
-
-
-// LEXICAL SPECIFICATIONS BEGIN HERE
 
 TOKEN:
 {

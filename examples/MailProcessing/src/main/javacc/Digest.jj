@@ -27,61 +27,56 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-PARSER_BEGIN(Digest)
-
-// care: the line package, even if in comment, will be used!
-/*
-pac-kage dig;
-
-import java.io.*;
-
-public class Digest {
-
-  static int count = 0;
-
-  static String buffer = "";
-
-  public static void main(String args[]) throws ParseException, FileNotFoundException  {
-    Digest parser = new Digest(new FileInputStream(args[0]));
-    System.out.println("DIGEST OF RECENT MESSAGES FROM THE JAVACC MAILING LIST");
-    System.out.println("----------------------------------------------------------------------");
-    System.out.println("");
-    System.out.println("MESSAGE SUMMARY:");
-    System.out.println("");
-    parser.MailFile();
-    if (count == 0) {
-      System.out.println("There have been no messages since the last digest posting.");
-      System.out.println("");
-      System.out.println("----------------------------------------------------------------------");
-    } else {
-      System.out.println("");
-      System.out.println("----------------------------------------------------------------------");
-      System.out.println("");
-      System.out.println(buffer);
-    }
-  }
-
+options
+{
+  NAMESPACE = "DIG";
 }
-*/
+
+PARSER_BEGIN(Digest)
+// ugly hack to make javacc generate under a subdirectory
+// package dig;
+
+  int count = 0;
+  System.IO.StreamWriter digsw;
+
+  public void setDigsw(System.IO.StreamWriter aDigsw) {
+    digsw = aDigsw;
+  }
 
 PARSER_END(Digest)
 
-void MailFile() :
-{}
+System.String MailFile() :
+{
+  System.String mail, mails = "";
+  System.Console.Out.Write("Digest: ");
+}
 {
   (
-    { count++; }
-    MailMessage()
+    {
+      count++;
+    }
+    mail = MailMessage()
+    {
+      mails += mail;
+      System.Console.Out.Write(count + ". ");
+    }
   )*
   <EOF>
+  {
+    System.Console.Out.WriteLine();
+    return mails;
+  }
 }
 
-void MailMessage() :
-{ Token subj = null, from = null, date = null, body; }
+System.String MailMessage() :
+{
+  Token subj = null, from = null, date = null, body;
+  System.String buffer = "";
+}
 {
   ( subj = <SUBJECT> | from = <FROM> | date = <DATE> )+
   {
-    System.Console.WriteLine(count + ". " + ( subj == null ? "no subject" : subj.image) );
+    digsw.WriteLine(count + ". " + ( subj == null ? "no subject" : subj.image) );
     buffer += "\n";
     buffer += "Message " + count + ":\n";
     buffer += "\n";
@@ -100,6 +95,7 @@ void MailMessage() :
   {
     buffer += "\n";
     buffer += "----------------------------------------------------------------------\n";
+    return buffer;
   }
 }
 
