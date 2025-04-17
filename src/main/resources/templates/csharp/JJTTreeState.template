@@ -38,9 +38,9 @@ namespace ${NAMESPACE_OPEN}
  *  with csharp/JJTTreeState.template) that manages the tree of nodes.
  */
 public partial class JJT${PARSER_NAME}State {
-  private System.Collections.Generic.List<Node> nodes;
-  private System.Collections.Generic.List<int> marks;
 
+  private System.Collections.Generic.List<Node> nodes;
+  private System.Collections.Generic.List<int>  marks;
   private int sp = 0;        // number of nodes on stack
   private int mk = 0;        // current mark
   private bool node_created = false;
@@ -50,15 +50,18 @@ public partial class JJT${PARSER_NAME}State {
     marks = new System.Collections.Generic.List<int>();
   }
 
-  /* Determines whether the current node was actually closed and
-     pushed.  This should only be called in the final user action of a
-     node scope.  */
+  /**
+   * Tells whether the current node was actually closed and pushed.<br>
+   * This should only be called in the final user action of a node scope.
+   */
   public bool nodeCreated() {
     return node_created;
   }
 
-  /* Call this to reinitialize the node stack.  It is called
-     automatically by the parser's ReInit() method. */
+  /**
+   * Call this to reinitialize the node stack.<br>
+   * It is called automatically by the parser's ReInit() method.
+   */
   public void reset() {
     nodes.Clear();
     marks.Clear();
@@ -66,20 +69,21 @@ public partial class JJT${PARSER_NAME}State {
     mk = 0;
   }
 
-  /* Returns the root node of the AST.  It only makes sense to call
-     this after a successful parse. */
+  /**
+   * Returns the root node of the AST.<br>
+   * It only makes sense to call this after a successful parse.
+   */
   public Node rootNode() {
     return nodes[0];
   }
 
-  /* Pushes a node on to the stack. */
+  /** Pushes a node on to the stack. */
   public void pushNode(Node n) {
     nodes.Add(n);
     ++sp;
   }
 
-  /* Returns the node on the top of the stack, and remove it from the
-     stack.  */
+  /** Returns the node on the top of the stack, and remove it from the stack. */
   public Node popNode() {
     if (--sp < mk) {
       mk = marks[marks.Count-1];
@@ -95,8 +99,7 @@ public partial class JJT${PARSER_NAME}State {
     return nodes[nodes.Count-1];
   }
 
-  /* Returns the number of children on the stack in the current node
-     scope. */
+  /* Returns the number of children on the stack in the current node scope. */
   public int nodeArity() {
     return sp - mk;
   }
@@ -117,11 +120,11 @@ public partial class JJT${PARSER_NAME}State {
     n.jjtOpen();
   }
 
-
-  /* A definite node is constructed from a specified number of
-     children.  That number of nodes are popped from the stack and
-     made the children of the definite node.  Then the definite node
-     is pushed on to the stack. */
+  /**
+   * A definite node is constructed from a specified number of children.<br>
+   * That number of nodes are popped from the stack and made the children of the definite node.<br>
+   * Then the definite node is pushed on to the stack.
+   */
   public void closeNodeScope(Node n, int num) {
     mk = marks[marks.Count-1];
     marks.RemoveAt(marks.Count-1);
@@ -135,12 +138,12 @@ public partial class JJT${PARSER_NAME}State {
     node_created = true;
   }
 
-
-  /* A conditional node is constructed if its condition is true.  All
-     the nodes that have been pushed since the node was opened are
-     made children of the conditional node, which is then pushed
-     on to the stack.  If the condition is false the node is not
-     constructed and they are left on the stack. */
+  /**
+   * A conditional node is constructed if its condition is true.<br>
+   * All the nodes that have been pushed since the node was opened are made children of the
+   *  conditional node, which is then pushed on to the stack.<br>
+   * If the condition is false the node is not constructed and they are left on the stack.
+   */
   public void closeNodeScope(Node n, bool condition) {
     if (condition) {
       int a = nodeArity();

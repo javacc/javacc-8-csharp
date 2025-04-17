@@ -55,7 +55,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
   <properties>
     <mojohaus.build-helper-maven-plugin.version>3.6.0</mojohaus.build-helper-maven-plugin.version>
-    <plexus-compiler-csharp.version>2.15.0</plexus-compiler-csharp.version>
+<!--    <plexus-compiler-csharp.version>2.15.0</plexus-compiler-csharp.version>-->
+    <plexus-compiler-csharp.version>2.15.1-SNAPSHOT</plexus-compiler-csharp.version>
   </properties>
 
   <build>
@@ -226,13 +227,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 <configuration>
                   <codeGenerator>c#</codeGenerator>
                   <sourceDirectory>src/main/jjtree</sourceDirectory>
-                  <nodeDirectory>target/generated-sources/jjtree</nodeDirectory>
-                  <!--
-                  <nodeDirectory>src/main/java</nodeDirectory>
-                  -->
-                  <outputDirectory>target/generated-sources/java</outputDirectory>
-                  <!-- generated nodes in target dir because no custom nodes
-                     - and the plugin will copy them there! -->
+                  <interimDirectory>target/generated-sources/jjtree</interimDirectory>
+                  <outputDirectory>target/generated-sources/csharp</outputDirectory>
+                  <nodeDirectory>src/main/csharp</nodeDirectory>
                 </configuration>
               </execution>
             </executions>
