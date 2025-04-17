@@ -29,23 +29,41 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 #fi
-  public bool jj_dummy = true;
-  private bool jj_done = false;
+  /* Lookahead phases return codes. */
+
+  public const bool LA_PHASE_2_FAILURE = false;
+  public const bool LA_PHASE_2_SUCCESS = true;
+  public const bool LA_PHASE_3_FAILURE = true;
+  public const bool LA_PHASE_3_SUCCESS = false;
+  public const bool LA_SCAN_TOKEN_FAILURE = true;
+  public const bool LA_SCAN_TOKEN_SUCCESS = false;
+
+  public  bool jj_dummy = true;
+  private bool jj_done  = false; // true when the last level lookahead succeeds
+  
   /** Generated or User defined TokenManager. */
   public ${parserName}TokenManager token_source;
+  
+  /** Generated or User defined input char stream. */
   ${JAVA_UNICODE_ESCAPE?Java:Simple}CharStream jj_input_stream;
+  
   /** Current token. */
   public Token token;
 
   /** Next token. */
   public Token jj_nt;
+  
   private int jj_ntk;
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
   private bool hasError = false;
-  private bool jj_semLA = false;
+
+  /** Whether we are looking ahead or not (impacts getToken(int i)). */
   private bool jj_lookingAhead = false;
+  
+  /* Whether we have a semantic looking ahead or not. */
+  private bool jj_semLA = false;
 
   /** Constructor. */
   public ${parserName}(System.IO.TextReader stream) {
@@ -56,7 +74,8 @@
     jj_gen = 0;
 #if ERROR_REPORTING
     for (int i = 0; i < jj_la1.Length; i++) {
-      jj_la1[i] = -1;
+      jj_la1[i]     = -1;
+      jj_la1_loc[i] = null;
     }
     for (int i = 0; i < jj_2_rtns.Length; i++) {
       jj_2_rtns[i] = new JJCalls();
@@ -87,7 +106,8 @@
     jj_gen = 0;
 #if ERROR_REPORTING
     for (int i = 0; i < jj_la1.Length; i++) {
-      jj_la1[i] = -1;
+      jj_la1[i]     = -1;
+      jj_la1_loc[i] = null;
     }
     for (int i = 0; i < jj_2_rtns.Length; i++) {
       jj_2_rtns[i] = new JJCalls();
@@ -110,7 +130,8 @@
     jj_gen = 0;
 #if ERROR_REPORTING
     for (int i = 0; i < jj_la1.Length; i++) {
-      jj_la1[i] = -1;
+      jj_la1[i]     = -1;
+      jj_la1_loc[i] = null;
     }
     for (int i = 0; i < jj_2_rtns.Length; i++) {
       jj_2_rtns[i] = new JJCalls();
@@ -133,7 +154,8 @@
     jj_gen = 0;
 #if ERROR_REPORTING
     for (int i = 0; i < jj_la1.Length; i++) {
-      jj_la1[i] = -1;
+      jj_la1[i]     = -1;
+      jj_la1_loc[i] = null;
     }
     for (int i = 0; i < jj_2_rtns.Length; i++) {
       jj_2_rtns[i] = new JJCalls();
@@ -148,15 +170,22 @@
 #fi
   }
 
+#if ERROR_REPORTING
+  private Token jj_consume_token(int kind, string loc)  {
+#else
   private Token jj_consume_token(int kind)  {
-    Token oldToken;
-    if ((oldToken = token).next != null) token = token.next;
-    else token = token.next = token_source.getNextToken();
+#fi
+    Token oldToken = token;
+    if (token.next != null) {
+      token = token.next;
+    } else {
+      token = token.next = token_source.getNextToken();
+    }
     jj_ntk = -1;
     if (token.kind == kind) {
 #if ERROR_REPORTING
       jj_gen++;
-      if (++jj_gc > 100) {
+      if (++jj_gc > MAX_NB_POS) {
         jj_gc = 0;
         for (int i = 0; i < jj_2_rtns.Length; i++) {
           JJCalls c = jj_2_rtns[i];
@@ -168,18 +197,28 @@
       }
 #fi
 #if DEBUG_PARSER
-      trace_token(token, " (in jj_consume_token())");
+      trace_consumed(token, " (in jj_consume_token())");
 #fi
       return token;
     }
+#if DEBUG_LOOKAHEAD
+    if (kind >= 0) trace_expected(kind, token, loc);
+#fi
     token = oldToken;
 #if ERROR_REPORTING
     jj_kind = kind;
-#fi
+    throw generateParseException(loc);
+#else
     throw generateParseException();
+#fi
   }
 
+  /** Scans for a token of a given expected kind, returning success or failure. */
+#if ERROR_REPORTING
+  private bool jj_scan_token(int kind, string loc) {
+#else
   private bool jj_scan_token(int kind) {
+#fi
     if (jj_scanpos == jj_lastpos) {
       jj_la--;
       if (jj_scanpos.next == null) {
@@ -199,7 +238,7 @@
         tok = tok.next;
       }
       if (tok != null) {
-        jj_add_error_token(kind, i);
+        jj_add_error_token(kind, i, loc);
       }
 #if DEBUG_LOOKAHEAD
     } else {
@@ -209,9 +248,13 @@
 #elif DEBUG_LOOKAHEAD
     trace_scan(jj_scanpos, kind);
 #fi
-    if (jj_scanpos.kind != kind) return true;
-    if (jj_la == 0 && jj_scanpos == jj_lastpos) { return jj_done = true; }
-    return false;
+    if (jj_scanpos.kind != kind) {
+      return LA_SCAN_TOKEN_FAILURE;
+    }
+    if (jj_la == 0 && jj_scanpos == jj_lastpos) {
+      return jj_done = LA_SCAN_TOKEN_FAILURE;
+    }
+    return LA_SCAN_TOKEN_SUCCESS;
   }
 
 /** Get the next Token. */
@@ -221,7 +264,7 @@
     jj_ntk = -1;
     jj_gen++;
 #if DEBUG_PARSER
-    trace_token(token, " (in getNextToken())");
+    trace_consumed(token, " (in getNextToken())");
 #fi
     return token;
   }
@@ -281,7 +324,7 @@
   protected void trace_call(string s) {
     if (traceEnabled) {
       for (int i = 0; i < trace_indent; i++) { System.Console.Out.Write(" "); }
-      System.Console.Out.WriteLine("Call:   " + s + " (pa)");
+      System.Console.Out.WriteLine("Call:   " + trace_indent + ": " + s + " (pa)");
     }
     trace_indent = trace_indent + 2;
   }
@@ -291,19 +334,33 @@
     trace_indent = trace_indent - 2;
     if (traceEnabled) {
       for (int i = 0; i < trace_indent; i++) { System.Console.Out.Write(" "); }
-      System.Console.Out.WriteLine("Return: " + s + " (pa)");
+      System.Console.Out.WriteLine("Return: " + trace_indent + ": " + s + " (pa)");
     }
   }
 
-  /** Parser trace for a token. */
-  protected void trace_token(Token t, string where) {
+  /** Parser trace for a consumed token. */
+  protected void trace_consumed(Token t, string where) {
     if (traceEnabled) {
       for (int i = 0; i < trace_indent; i++) { System.Console.Out.Write(" "); }
       System.Console.Out.Write("Consumed token: " + disp_token(t));
 #if KEEP_LINE_COLUMN
-      System.Console.Out.Write(", at " + t.beginLine + ":" + t.beginColumn);
+      System.Console.Out.Write(", @ " + t.beginLine + ":" + t.beginColumn);
 #fi
       System.Console.Out.WriteLine(where + " (pa)");
+    }
+  }
+
+  /** Parser trace for an expected but not matched token. */
+  protected void trace_expected(int k1, Token t2, string loc) {
+    if (traceEnabled) {
+      for (int i = 0; i < trace_indent; i++) { System.Console.Out.Write(" "); }
+      System.Console.Out.Write("Expected token: <" + k1);
+      if (k1 >= 0) System.Console.Out.Write(" / " + tokenImage[k1]);
+      System.Console.Out.Write(">");
+#if KEEP_LINE_COLUMN
+      System.Console.Out.Write(", @ " + loc);
+#fi
+      System.Console.Out.WriteLine(" not matched by consumed token: " + disp_token(t2) + " (pa)");
     }
   }
 
@@ -345,7 +402,7 @@
   protected void trace_la_call(string s) {
     if (traceLaEnabled) {
       for (int i = 0; i < trace_indent; i++) { System.Console.Out.Write(" "); }
-      System.Console.Out.WriteLine("Call:   " + s + " (la)");
+      System.Console.Out.WriteLine("Call:   " + trace_indent + ": " + s + " (la)");
     }
     trace_indent = trace_indent + 2;
   }
@@ -355,17 +412,17 @@
     trace_indent = trace_indent - 2;
     if (traceLaEnabled) {
       for (int i = 0; i < trace_indent; i++) { System.Console.Out.Write(" "); }
-      System.Console.Out.WriteLine("Return: " + s + " (la)");
+      System.Console.Out.WriteLine("Return: " + trace_indent + ": " + s + " (la)");
     }
   }
 
-  /** Lookahead trace for a token. */
+  /** Lookahead trace for a scanned (visited) token. */
   protected void trace_scan(Token t1, int k2) {
     if (traceLaEnabled) {
       for (int i = 0; i < trace_indent; i++) { System.Console.Out.Write(" "); }
-      System.Console.Out.Write("Visited token: " + disp_token(t1));
+      System.Console.Out.Write("Visited token (la=" + jj_la + "): " + disp_token(t1));
 #if KEEP_LINE_COLUMN
-      System.Console.Out.Write(", at " + t1.beginLine + ":" + t1.beginColumn);
+      System.Console.Out.Write(", @ " + t1.beginLine + ":" + t1.beginColumn);
 #fi
       System.Console.Out.WriteLine("; Expected token: <" + k2 + " / " + tokenLabel[k2] + "> (la)");
     }
@@ -398,12 +455,15 @@
     if (ix > 0) {
       JJCalls p = jj_2_rtns[index];
       while (p.gen > jj_gen) {
-        if (p.next == null) { p = p.next = new JJCalls(); break; }
+        if (p.next == null) {
+          p = p.next = new JJCalls();
+          break;
+        }
         p = p.next;
       }
-      p.gen = jj_gen + xla - jj_la; 
+      p.gen   = jj_gen + xla - jj_la; 
       p.first = token;
-      p.arg = xla;
+      p.arg   = xla;
     }
   }
 
@@ -434,22 +494,30 @@
     jj_rescan = false;
   }
 
-  private System.Collections.Generic.List<int[]> jj_expentries = new System.Collections.Generic.List<int[]>();
-  private int[] jj_expentry;
-  private int[] jj_lasttokens = new int[100];
-  private int jj_endpos;
+  private System.Collections.Generic.List<int[]> jj_expentries        = new System.Collections.Generic.List<int[]>();
+  private System.Collections.Generic.List<string[]> jj_expentries_loc = new System.Collections.Generic.List<string[]>();
+  private int[]     jj_expentry;
+  private string[]  jj_expentry_loc;
+  private const int MAX_NB_POS        = 100;
+  private int[]     jj_lasttokens     = new int[MAX_NB_POS];
+  private string[]  jj_lasttokens_loc = new string[MAX_NB_POS];
+  private int       jj_endpos;
 
-  private void jj_add_error_token(int kind, int pos) {
-    if (pos >= 100) {
+  private void jj_add_error_token(int kind, int pos, string loc) {
+    if (pos >= MAX_NB_POS) {
       return;
     }
 
     if (pos == jj_endpos + 1) {
-      jj_lasttokens[jj_endpos++] = kind;
+      jj_lasttokens[jj_endpos]     = kind;
+      jj_lasttokens_loc[jj_endpos] = loc;
+      jj_endpos++;
     } else if (jj_endpos != 0) {
-      jj_expentry = new int[jj_endpos];
+      jj_expentry     = new int[jj_endpos];
+      jj_expentry_loc = new string[jj_endpos];
       for (int i = 0; i < jj_endpos; i++) {
-        jj_expentry[i] = jj_lasttokens[i];
+        jj_expentry[i]     = jj_lasttokens[i];
+        jj_expentry_loc[i] = jj_lasttokens_loc[i];
       }
       foreach (int[] oldentry in jj_expentries) {
         if (oldentry.Length == jj_expentry.Length) {
@@ -462,12 +530,15 @@
           }
           if (isMatched) {
             jj_expentries.Add(jj_expentry);
+            jj_expentries_loc.Add(jj_expentry_loc);
             break;
           }
         }
       }
       if (pos != 0) {
-        jj_lasttokens[(jj_endpos = pos) - 1] = kind;
+        jj_lasttokens[pos - 1]     = kind;
+        jj_lasttokens_loc[pos - 1] = loc;
+        jj_endpos = pos;
       }
     }
   }

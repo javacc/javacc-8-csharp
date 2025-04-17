@@ -80,6 +80,7 @@ namespace Bug001 {
       } catch (Exception e) {
         Console.Error.WriteLine("Error parsing input file");
         Console.Error.WriteLine(e.Message);
+//        Console.Error.WriteLine(e);
       } finally {
         Console.In.Close();
         Console.Out.Close();

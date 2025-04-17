@@ -49,23 +49,27 @@ public partial class ParseException : System.Exception {
   /**
    * This constructor is used by the method "generateParseException" in the generated parser.<br>
    * Calling this constructor generates a new object of this type with the fields "currentToken",
-   *  "expectedTokenSequences", "tokenImage, "tokenLabel, "expectedExpansionLineVal"
-   *  and "expectedExpansionColumnVal" set.
+   *  "expectedTokenSequences", "expectedTokenSequencesLoc", "tokenImage, "tokenLabel and
+   * "locationVal" set.
    */
   public ParseException(   Token currentTokenVal,
                          int[][] expectedTokenSequencesVal,
+                      string[][] expectedTokenSequencesLocVal,
                         string[] tokenImageVal,
                         string[] tokenLabelVal,
-                             int expectedExpansionLineVal,
-                             int expectedExpansionColumnVal) :
-         base(initialise(currentTokenVal, expectedTokenSequencesVal, tokenImageVal, tokenLabelVal, 
-                         expectedExpansionLineVal, expectedExpansionColumnVal)) {
-    currentToken = currentTokenVal;
-    expectedTokenSequences = expectedTokenSequencesVal;
-    tokenImage = tokenImageVal;
-    tokenLabel = tokenLabelVal;
-    expectedExpansionLine = expectedExpansionLineVal;
-    expectedExpansionColumn = expectedExpansionColumnVal;
+                          string locationVal) :
+    base(initialise(currentTokenVal,
+                    expectedTokenSequencesVal,
+                    expectedTokenSequencesLocVal, 
+                    tokenImageVal,
+                    tokenLabelVal,
+                    locationVal)) {
+    currentToken              = currentTokenVal;
+    expectedTokenSequences    = expectedTokenSequencesVal;
+    expectedTokenSequencesLoc = expectedTokenSequencesLocVal;
+    tokenImage                = tokenImageVal;
+    tokenLabel                = tokenLabelVal;
+    location                  = locationVal;
   }
 
   /*
@@ -96,9 +100,16 @@ public partial class ParseException : System.Exception {
   /**
    * Each entry in this array is an array of integers.<br>
    * Each array of integers represents a sequence of tokens (by their ordinal values)
-   *  that is expected at this point of the parse.
+   *  that are expected at this point of the parse.
    */
   public int[][] expectedTokenSequences;
+
+  /**
+   * Each entry in this array is an array of strings.<br>
+   * Each array of strings represents a sequence of tokens images (by their ordinal values)
+   *  that are expected at this point of the parse.
+   */
+  public string[][] expectedTokenSequencesLoc;
 
   /**
    * This is a reference to the "tokenImage" array of the generated parser within which
@@ -115,32 +126,28 @@ public partial class ParseException : System.Exception {
   public string[] tokenLabel;
 
   /**
-   * The beginning line of the expansion where the exception arose.
+   * The location of the expansion where the exception arose.
    */
-  public int expectedExpansionLine;
+  public string location;
 
-  /**
-   * The beginning column of the expansion where the exception arose.
-   */
-  public int expectedExpansionColumn;
 
   /**
    * Generate a parse error message and returns it.<br>
    * If this object has been created due to a parse error and you do not catch it
    *  (i.e. it gets thrown from the parser), the correct error message gets displayed.
    */
-  private static string initialise(   Token currentToken,
-                                    int[][] expectedTokenSequences,
-                                   string[] tokenImage,
-                                   string[] tokenLabel,
-                                        int expectedExpansionLine,
-                                        int expectedExpansionColumn) {
+  private static string initialise(   Token currToken,
+                                    int[][] expTokenSequences,
+                                 string[][] expTokenSequencesLoc,
+                                   string[] tokImage,
+                                   string[] tokLabel,
+                                     string loc) {
 
     string expected = string.Empty;
     int maxSize = 0;
     
-    for (int i = 0; i < expectedTokenSequences.Length; i++) {
-      int[] expTkSeq = expectedTokenSequences[i];
+    for (int i = 0; i < expTokenSequences.Length; i++) {
+      int[] expTkSeq = expTokenSequences[i];
       if (maxSize < expTkSeq.Length) {
         maxSize = expTkSeq.Length;
       }
@@ -150,7 +157,8 @@ public partial class ParseException : System.Exception {
         } else {
           expected += "    ";
        }
-        expected += tokenImage[expTkSeq[j]];
+        expected += tokImage[expTkSeq[j]];
+        expected += " (inside " + expTokenSequencesLoc[i][j] + ") ";
       }
       if (expTkSeq[expTkSeq.Length - 1] != 0) {
         expected += "...";
@@ -158,33 +166,32 @@ public partial class ParseException : System.Exception {
       expected += EOL;
     }
     string retval = "Encountered:";
-    Token tok = currentToken.next;
+    Token tok = currToken.next;
     for (int i = 0; i < maxSize; i++) {
       retval += ' ';
       if (tok.kind == 0) {
-        retval += tokenLabel[0];
+        retval += tokLabel[0];
         break;
       }
-      retval += tokenLabel[tok.kind] + " / \"" + add_escapes(tok.image) + '"';
+      retval += tokLabel[tok.kind] + " / \"" + add_escapes(tok.image) + '"';
       tok = tok.next;
     }
 #if KEEP_LINE_COLUMN
-    retval += ", at line " + currentToken.next.beginLine;
-    retval += ", column " + currentToken.next.beginColumn;
+    retval += ", at line " + currToken.next.beginLine;
+    retval += ", column " + currToken.next.beginColumn;
 #fi
     retval += '.' + EOL;
 
-    if (expectedTokenSequences.Length == 0) {
+    if (expTokenSequences.Length == 0) {
       // Nothing to add here
     } else {
-	    if (expectedTokenSequences.Length == 1) {
+	    if (expTokenSequences.Length == 1) {
 	      retval += "Was expecting this terminal";
 	    } else {
 	      retval += "Was expecting one of these terminals";
 	    }
 #if KEEP_LINE_COLUMN
-      retval += " within expansion starting at line " + expectedExpansionLine;
-      retval += ", column " + expectedExpansionColumn;
+      retval += " within expansion starting at " + loc;
 #fi
       retval += ':' + EOL + expected.ToString();
     }

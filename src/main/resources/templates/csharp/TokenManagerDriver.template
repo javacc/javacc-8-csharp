@@ -126,7 +126,7 @@ ${decls}
           System.Console.Error.WriteLine(
               "Read 1st char for any kind: " + disp_char(curChar) + 
 #if KEEP_LINE_COLUMN
-              ", at L:C: " + input_stream.getBeginLine() + ":" + input_stream.getBeginColumn() +
+              ", @ " + input_stream.getBeginLine() + ":" + input_stream.getBeginColumn() +
 #fi
               " (tm)");
         }
@@ -140,7 +140,7 @@ ${decls}
               disp_state(curLexState, lexStateNames) +
               " Reached EOF (1st)" +
 #if KEEP_LINE_COLUMN
-              ", at L:C: " + input_stream.getBeginLine() + ":" + input_stream.getBeginColumn() +
+              ", @ " + input_stream.getBeginLine() + ":" + input_stream.getBeginColumn() +
 #fi
               " (tm)");
 #fi
@@ -156,7 +156,7 @@ ${decls}
             disp_state(curLexState, lexStateNames) +
             " Current input char: " + disp_char(curChar) +
 #if KEEP_LINE_COLUMN
-            ", at L:C: " +
+            ", @ " +
             input_stream.getBeginLine() + ":" + input_stream.getBeginColumn() +
 #fi
             " (tm)");
@@ -263,7 +263,7 @@ ${decls}
                   disp_state(curLexState, lexStateNames) +
                   " Reached EOF (in a MORE)" +
 #if KEEP_LINE_COLUMN
-                  ", at L:C: " +
+                  ", @ " +
                   input_stream.getBeginLine() + ":" + input_stream.getBeginColumn() +
 #fi
                   " (tm)");
@@ -337,8 +337,8 @@ ${decls}
         int len = stringLiterals[index++];
 #if DEBUG_TOKEN_MANAGER
         if (trace_enabled()) System.Console.Error.WriteLine(
-              "  Looking for string literal match of kind: " + stringLiterals[index + len] +
-              ", token image: " + tokenLabel[stringLiterals[index + len]] + " (tm)");
+              "  Looking for string literal match of token: <" + stringLiterals[index + len] +
+              " / " + tokenLabel[stringLiterals[index + len]] + "> (tm)");
 #fi
         do {
 #if DEBUG_TOKEN_MANAGER
@@ -355,16 +355,16 @@ ${decls}
             --curPos;
             break;
           }
-        } while(curPos < len);
+        } while (curPos < len);
         if (curPos == len) {
           jjmatchedKind = stringLiterals[index + len];
-          jjmatchedPos = curPos;
-          startState = stringLiterals[index + len + 1];
+          jjmatchedPos  = curPos;
+          startState    = stringLiterals[index + len + 1];
 #if DEBUG_TOKEN_MANAGER
           if (trace_enabled()) System.Console.Error.WriteLine(
                 "  Currently matched the first: " + jjmatchedPos +
-                " chars as kind: " + stringLiterals[index + len] +
-                ", token image: " + tokenLabel[jjmatchedKind] + " (tm)");
+                " chars as token: <" + jjmatchedKind +
+                " / " + tokenLabel[jjmatchedKind] + "> (tm)");
 #fi
           if (!moveToNextChar()) {
             return curPos;
@@ -482,11 +482,11 @@ ${decls}
         // TODO(sreeni) : Fix it to give better error message instead of UNKNOWN.
         if (trace_enabled()) System.Console.Error.WriteLine(
              "    Looking to move from state: " +  disp_state(state, lexStateNames) +
-             ", for token: " +
+             ", for token: <" +
              (jjmatchKinds[state] != int.MaxValue
-                  ? ParseException.add_escapes(tokenImage[jjmatchKinds[state]])
-                  : "<UNKNOWN>") +
-             " (tm)");
+                  ? (jjmatchKinds[state] + " / " + ParseException.add_escapes(tokenImage[jjmatchKinds[state]]))
+                  : "UNKNOWN") +
+             "> (tm)");
 #fi
         if ((jjChars[state][vectorIndex] & bitpattern) != 0L) {
           // Current input character can move this NFA state.
@@ -615,7 +615,7 @@ ${decls}
   }
 
   static string disp_char(int ic) {
-    return ic.ToString() + " / '" + add_escapes(ic) + "'";
+    return "`" + ic.ToString() + " / '" + add_escapes(ic) + "'´";
   }
 
   /**
