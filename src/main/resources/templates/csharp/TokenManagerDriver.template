@@ -338,7 +338,7 @@ ${decls}
 #if DEBUG_TOKEN_MANAGER
         if (trace_enabled()) System.Console.Error.WriteLine(
               "  Looking for string literal match of token: <" + stringLiterals[index + len] +
-              " / " + tokenLabel[stringLiterals[index + len]] + "> (tm)");
+              " / \"" + tokenImage[stringLiterals[index + len]] + "\"> (tm)");
 #fi
         do {
 #if DEBUG_TOKEN_MANAGER
@@ -364,7 +364,7 @@ ${decls}
           if (trace_enabled()) System.Console.Error.WriteLine(
                 "  Currently matched the first: " + jjmatchedPos +
                 " chars as token: <" + jjmatchedKind +
-                " / " + tokenLabel[jjmatchedKind] + "> (tm)");
+                " / \"" + tokenImage[jjmatchedKind] + "\"> (tm)");
 #fi
           if (!moveToNextChar()) {
             return curPos;

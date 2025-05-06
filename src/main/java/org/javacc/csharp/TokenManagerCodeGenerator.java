@@ -540,14 +540,21 @@ class TokenManagerCodeGenerator implements org.javacc.parser.TokenManagerCodeGen
     }
     cb.println();
 
-    cb.println("  /** Literal token values. */");
+    cb.println("  /**");
+    cb.println("   * Tokens labels (if any) or images (if string literal) or named kinds");
+    cb.println("   * (for non labeled non string literals).");
+    cb.println("   */");
     cb.println("  public static string[] tokenImage = {");
     for (int i = 0; i < tokenizerData.images.length; i++) {
+      String lbl;
       if (i > 0) {
         cb.println(",");
       }
       if (tokenizerData.images[i] == null) {
         cb.print("    @\"<EOF>\"");
+      } else if ((lbl = tokenizerData.labels.get(i)) != null) {
+        //        cb.print("    @\"<" + JavaCCGlobals.add_escapes(lbl) + ">\"");
+        cb.print("    @\"<" + lbl + ">\"");
       } else {
         cb.print("    @\"" + JavaCCGlobals.add_escapes(tokenizerData.images[i]) + "\"");
       }
@@ -556,25 +563,26 @@ class TokenManagerCodeGenerator implements org.javacc.parser.TokenManagerCodeGen
     cb.println("  };");
     cb.println();
 
-    cb.println("  /** Literal token labels. */");
-    cb.println("  public static string[] tokenLabel = {");
-    for (int i = 0; i < tokenizerData.images.length; i++) {
-      String lbl;
-      if (i > 0) {
-        cb.println(",");
-      }
-      // prefer labels to literals
-      if (tokenizerData.images[i] == null) {
-        cb.print("    @\"<EOF>\"");
-      } else if ((lbl = tokenizerData.labels.get(i)) != null) {
-        cb.print("    @\"<" + JavaCCGlobals.add_escapes(lbl) + ">\"");
-      } else {
-        cb.print("    @\"\"\"" + JavaCCGlobals.add_escapes(tokenizerData.images[i]) + "\"\"\"");
-      }
-    }
-    cb.println();
-    cb.println("  };");
-    cb.println();
+    //    cb.println("  /** Literal token labels (for display purposes). */");
+    //    cb.println("  public static string[] tokenLabel = {");
+    //    for (int i = 0; i < tokenizerData.images.length; i++) {
+    //      String lbl;
+    //      if (i > 0) {
+    //        cb.println(",");
+    //      }
+    //      if (tokenizerData.images[i] == null) {
+    //        cb.print("    @\"<EOF>\"");
+    //      } else if ((lbl = tokenizerData.labels.get(i)) != null) {
+    //        //        cb.print("    @\"<" + JavaCCGlobals.add_escapes(lbl) + ">\"");
+    //        cb.print("    @\"<" + lbl + ">\"");
+    //      } else {
+    //        cb.print("    @\"\"\"" + JavaCCGlobals.add_escapes(tokenizerData.images[i]) +
+    // "\"\"\"");
+    //      }
+    //    }
+    //    cb.println();
+    //    cb.println("  };");
+    //    cb.println();
 
     for (int i = 0; i < tokenizerData.lexStateNames.length; i++) {
       cb.println("  /** Lexical state " + i + ". */");

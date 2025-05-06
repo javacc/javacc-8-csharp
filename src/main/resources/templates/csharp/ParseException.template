@@ -49,35 +49,30 @@ public partial class ParseException : System.Exception {
   /**
    * This constructor is used by the method "generateParseException" in the generated parser.<br>
    * Calling this constructor generates a new object of this type with the fields "currentToken",
-   *  "expectedTokenSequences", "expectedTokenSequencesLoc", "tokenImage, "tokenLabel and
-   * "locationVal" set.
+   *  "expectedTokenSequences", "expectedTokenSequencesLoc", "tokenImage" and "locationVal" set.
    */
   public ParseException(   Token currentTokenVal,
                          int[][] expectedTokenSequencesVal,
                       string[][] expectedTokenSequencesLocVal,
                         string[] tokenImageVal,
-                        string[] tokenLabelVal,
                           string locationVal) :
     base(initialise(currentTokenVal,
                     expectedTokenSequencesVal,
                     expectedTokenSequencesLocVal, 
                     tokenImageVal,
-                    tokenLabelVal,
                     locationVal)) {
     currentToken              = currentTokenVal;
     expectedTokenSequences    = expectedTokenSequencesVal;
     expectedTokenSequencesLoc = expectedTokenSequencesLocVal;
     tokenImage                = tokenImageVal;
-    tokenLabel                = tokenLabelVal;
     location                  = locationVal;
   }
 
   /*
    * The following constructors are for use by you for whatever purpose you can think of.
-   * Constructing the exception in this manner makes the exception behave in the normal way
-   *  - i.e., as documented in the class "Throwable".<br>
-   * The fields "errorToken", "expectedTokenSequences", "tokenImage, "expectedExpansionLineVal" and
-   *  "expectedExpansionColumnVal" do not contain relevant information.<br>
+   * Constructing the exception in this manner makes the exception behave in the normal way.
+   * The fields "errorToken", "expectedTokenSequences", "tokenImage and "location"
+   *  will not contain relevant information.
    * The JavaCC generated code does not use these constructors.
    */
 
@@ -119,13 +114,6 @@ public partial class ParseException : System.Exception {
   public string[] tokenImage;
 
   /**
-   * This is a reference to the "tokenLabel" array of the generated parser within which
-   *  the parse error occurred.<br>
-   * This array is defined in the generated ParserConstants interface.
-   */
-  public string[] tokenLabel;
-
-  /**
    * The location of the expansion where the exception arose.
    */
   public string location;
@@ -140,7 +128,6 @@ public partial class ParseException : System.Exception {
                                     int[][] expTokenSequences,
                                  string[][] expTokenSequencesLoc,
                                    string[] tokImage,
-                                   string[] tokLabel,
                                      string loc) {
 
     string expected = string.Empty;
@@ -170,10 +157,10 @@ public partial class ParseException : System.Exception {
     for (int i = 0; i < maxSize; i++) {
       retval += ' ';
       if (tok.kind == 0) {
-        retval += tokLabel[0];
+        retval += tokImage[0];
         break;
       }
-      retval += tokLabel[tok.kind] + " / \"" + add_escapes(tok.image) + '"';
+      retval += tokImage[tok.kind] + " / \"" + add_escapes(tok.image) + '"';
       tok = tok.next;
     }
 #if KEEP_LINE_COLUMN
@@ -190,10 +177,8 @@ public partial class ParseException : System.Exception {
 	    } else {
 	      retval += "Was expecting one of these terminals";
 	    }
-#if KEEP_LINE_COLUMN
-      retval += " within expansion starting at " + loc;
-#fi
-      retval += ':' + EOL + expected.ToString();
+      retval += " within expansion starting at " + loc + ':' + EOL;
+      retval += expected.ToString();
     }
     return retval;
   }
