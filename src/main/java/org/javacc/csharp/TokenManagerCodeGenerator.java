@@ -74,6 +74,7 @@ class TokenManagerCodeGenerator implements org.javacc.parser.TokenManagerCodeGen
     settings.put("defaultLexState", tokenizerData.lexStateNames[tokenizerData.defaultLexState]);
     settings.put("decls", tokenizerData.decls);
     settings.put("generatedStates", tokenizerData.nfa.size());
+    settings.put("initMatch", tokenizerData.initialMatchForLexState);
 
     final String tmSuperClass = (String) settings.get(Options.UO__TOKEN_MANAGER_SUPER_CLASS);
     settings.put(
@@ -224,7 +225,7 @@ class TokenManagerCodeGenerator implements org.javacc.parser.TokenManagerCodeGen
     cb.println();
 
     /* jjInitStates. */
-    cb.println("  private static readonly int[] jjInitStates  = {");
+    cb.println("  private static readonly int[] jjInitStates = {");
     v = 0;
     for (final int i : tokenizerData.initialStates.keySet()) {
       if (v++ > 0) {
@@ -236,6 +237,21 @@ class TokenManagerCodeGenerator implements org.javacc.parser.TokenManagerCodeGen
     }
     cb.println();
     cb.println("  };");
+    cb.println();
+
+    /* jjInitialMatchForLexState. */
+    cb.print("  private static readonly int[] jjInitialMatchForLexState = {");
+    v = 0;
+    for (int i = 0; i < tokenizerData.lexStateNames.length; i++) {
+      if (v++ > 0) {
+        cb.print(", ");
+      } else {
+        cb.println();
+        cb.print("    ");
+      }
+      cb.print(tokenizerData.initialMatchForLexState[i]);
+    }
+    cb.println("};");
     cb.println();
 
     /* jjCharData. */

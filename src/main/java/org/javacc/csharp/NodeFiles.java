@@ -55,14 +55,14 @@ final class NodeFiles {
   }
 
   void generateOutputFiles(final JJTreeContext context) throws IOException {
-    generateDefaultNode(context);
+    generateBaseNodes(context);
     generateTreeNodes(context);
     generateTreeConstants(context);
     generateVisitor(context);
     generateDefaultVisitor(context);
   }
 
-  private static void generateDefaultNode(final JJTreeContext context) throws IOException {
+  private static void generateBaseNodes(final JJTreeContext context) throws IOException {
     final CodeGeneratorSettings options = CodeGeneratorSettings.of(Options.getOptions());
     options.set(Options.NUO__PARSER_NAME, JJTreeGlobals.parserName);
     options.set(
@@ -160,8 +160,7 @@ final class NodeFiles {
   private static void generateTreeConstants(final JJTreeContext context) {
     try (GenericCodeBuilder gcb = GenericCodeBuilder.of(context, CodeGeneratorSettings.create())) {
       gcb.setFile(
-          new File(
-              context.treeOptions().getJJTreeOutputDirectory(), NodeFiles.nodeConstants() + ".cs"));
+          new File(context.treeOptions().getJJTreeOutputDirectory(), nodeConstants() + ".cs"));
 
       final List<String> nodeIds = ASTNodeDescriptor.getNodeIds();
       final List<String> nodeNames = ASTNodeDescriptor.getNodeNames();
@@ -169,7 +168,7 @@ final class NodeFiles {
       if (Options.stringValue(Options.UO__NAMESPACE).length() > 0) {
         gcb.println("namespace " + Options.stringValue("NAMESPACE_OPEN"));
       }
-      gcb.println("public class " + NodeFiles.nodeConstants());
+      gcb.println("public class " + nodeConstants());
       gcb.println("{");
 
       for (int i = 0; i < nodeIds.size(); ++i) {
@@ -201,7 +200,7 @@ final class NodeFiles {
     }
 
     final List<String> nodeNames = ASTNodeDescriptor.getNodeNames();
-    final String ve = NodeFiles.mergeVisitorException(context);
+    final String ve = mergeVisitorException(context);
     String argumentType = "object";
     if (!context.treeOptions().getVisitorDataType().equals("")) {
       argumentType = context.treeOptions().getVisitorDataType();
@@ -209,14 +208,13 @@ final class NodeFiles {
 
     try (GenericCodeBuilder gcb = GenericCodeBuilder.of(context, CodeGeneratorSettings.create())) {
       gcb.setFile(
-          new File(
-              context.treeOptions().getJJTreeOutputDirectory(), NodeFiles.visitorClass() + ".cs"));
+          new File(context.treeOptions().getJJTreeOutputDirectory(), visitorClass() + ".cs"));
 
       if (Options.stringValue(Options.UO__NAMESPACE).length() > 0) {
         gcb.println("namespace " + Options.stringValue("NAMESPACE_OPEN"));
       }
 
-      gcb.println("public interface " + NodeFiles.visitorClass() + " {");
+      gcb.println("public interface " + visitorClass() + " {");
       gcb.println(
           "  "
               + (context.treeOptions().getVisitorDataTypeIsPointer() ? "unsafe " : "")
@@ -238,7 +236,7 @@ final class NodeFiles {
                   + (context.treeOptions().getVisitorDataTypeIsPointer() ? "unsafe " : "")
                   + context.treeOptions().getVisitorReturnType()
                   + " "
-                  + NodeFiles.getVisitMethodName(nodeType)
+                  + getVisitMethodName(nodeType)
                   + "("
                   + nodeType
                   + " node, "
@@ -263,7 +261,7 @@ final class NodeFiles {
       return;
     }
 
-    final String ve = NodeFiles.mergeVisitorException(context);
+    final String ve = mergeVisitorException(context);
     final String ret = context.treeOptions().getVisitorReturnType();
     String argumentType = "object";
     if (!context.treeOptions().getVisitorDataType().equals("")) {
@@ -274,19 +272,13 @@ final class NodeFiles {
     try (GenericCodeBuilder gcb = GenericCodeBuilder.of(context, CodeGeneratorSettings.create())) {
       gcb.setFile(
           new File(
-              context.treeOptions().getJJTreeOutputDirectory(),
-              NodeFiles.defaultVisitorClass() + ".cs"));
+              context.treeOptions().getJJTreeOutputDirectory(), defaultVisitorClass() + ".cs"));
 
       if (Options.stringValue(Options.UO__NAMESPACE).length() > 0) {
         gcb.println("namespace " + Options.stringValue("NAMESPACE_OPEN"));
       }
 
-      gcb.println(
-          "public class "
-              + NodeFiles.defaultVisitorClass()
-              + " : "
-              + NodeFiles.visitorClass()
-              + "{");
+      gcb.println("public class " + defaultVisitorClass() + " : " + visitorClass() + "{");
 
       gcb.println(
           "  "
@@ -328,7 +320,7 @@ final class NodeFiles {
                   + "public virtual "
                   + ret
                   + " "
-                  + NodeFiles.getVisitMethodName(nodeType)
+                  + getVisitMethodName(nodeType)
                   + "("
                   + nodeType
                   + " node, "
