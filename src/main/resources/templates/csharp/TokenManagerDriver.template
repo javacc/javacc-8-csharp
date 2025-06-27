@@ -274,7 +274,11 @@ ${decls}
             curChar = input_stream.readChar();
 #if DEBUG_TOKEN_MANAGER
             if (trace_enabled()) System.Console.Error.WriteLine(
-                 "Read next char for a MORE: " + disp_char(curChar) + " (tm)");
+                  "Read next char for a MORE: " + disp_char(curChar) +
+#if KEEP_LINE_COLUMN
+                  ", @ " + input_stream.getBeginLine() + ":" + input_stream.getBeginColumn() +
+#fi
+                  " (tm)");
 #fi
 #if IGNORE_CASE
             curChar = (int) System.Char.ToLower((char) curChar);
