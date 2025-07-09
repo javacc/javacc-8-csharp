@@ -100,11 +100,11 @@ ${SUPPORT_CLASS_VISIBILITY_PUBLIC?public :}partial class Token {
   }
 
   /** Constructs a new token for the specified Image. */
-  public Token(int kind) : this(kind, null){
+  public Token(int kind) : this(kind, null) {
   }
 
   /** Constructs a new token for the specified image and kind. */
-  public Token(int kind, string image){
+  public Token(int kind, string image) {
     this.kind = kind;
     this.image = image;
   }
