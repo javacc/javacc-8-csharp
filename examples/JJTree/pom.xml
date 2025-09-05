@@ -257,7 +257,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 <configuration>
                   <sourceDirectory>${project.basedir}/src/main/jjtree/eg1</sourceDirectory>
 <!--                  <nodeDirectory>${project.basedir}/target/generated-sources/jjtree/eg1</nodeDirectory>-->
-                  <outputDirectory>${project.basedir}/target/generated-sources/java</outputDirectory>
+                  <outputDirectory>${project.basedir}/target/generated-sources/csharp</outputDirectory>
                   <codeGenerator>c#</codeGenerator>
                 </configuration>
               </execution>
@@ -289,7 +289,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 <configuration>
                   <sourceDirectory>${project.basedir}/src/main/jjtree/eg2</sourceDirectory>
 <!--                  <nodeDirectory>${project.basedir}/target/generated-sources/jjtree/eg2</nodeDirectory>-->
-                  <outputDirectory>${project.basedir}/target/generated-sources/java</outputDirectory>
+                  <outputDirectory>${project.basedir}/target/generated-sources/csharp</outputDirectory>
                   <codeGenerator>c#</codeGenerator>
                 </configuration>
               </execution>
@@ -321,7 +321,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 <configuration>
                   <sourceDirectory>${project.basedir}/src/main/jjtree/eg3</sourceDirectory>
                   <nodeDirectory>${project.basedir}/target/generated-sources/java/eg3</nodeDirectory>
-                  <outputDirectory>${project.basedir}/target/generated-sources/java</outputDirectory>
+                  <outputDirectory>${project.basedir}/target/generated-sources/csharp</outputDirectory>
                   <codeGenerator>c#</codeGenerator>
                 </configuration>
               </execution>
@@ -353,7 +353,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 <configuration>
                   <sourceDirectory>${project.basedir}/src/main/jjtree/eg4</sourceDirectory>
 <!--                  <nodeDirectory>${project.basedir}/target/generated-sources/jjtree/eg4</nodeDirectory>-->
-                  <outputDirectory>${project.basedir}/target/generated-sources/java</outputDirectory>
+                  <outputDirectory>${project.basedir}/target/generated-sources/csharp</outputDirectory>
                   <codeGenerator>c#</codeGenerator>
                 </configuration>
               </execution>
