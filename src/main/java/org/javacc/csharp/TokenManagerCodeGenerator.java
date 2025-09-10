@@ -263,9 +263,11 @@ class TokenManagerCodeGenerator implements org.javacc.parser.TokenManagerCodeGen
         cb.println(",");
       }
       if (tmp == null) {
-        cb.print("    new long[] {}");
+        //        cb.print("    new long[] {}");
+        cb.print("    /* " + i + " */ new long[] {}");
       } else {
-        cb.print("    new long[] { ");
+        //        cb.print("    new long[] { ");
+        cb.print("    /* " + i + " */ new long[] { ");
         final BitSet bits = new BitSet();
         for (final char c : tmp.characters) {
           bits.set(c);
@@ -299,10 +301,12 @@ class TokenManagerCodeGenerator implements org.javacc.parser.TokenManagerCodeGen
         cb.println(", ");
       }
       if (tmp == null) {
-        cb.print("    new int[] {}");
+        //        cb.print("    new int[] {}");
+        cb.print("    /* " + i + " */ new int[] {}");
         continue;
       }
-      cb.print("    new int[] { ");
+      //      cb.print("    new int[] { ");
+      cb.print("    /* " + i + " */ new int[] { ");
       int k = 0;
       for (final int st : tmp.compositeStates) {
         if (k++ > 0) {
@@ -323,7 +327,8 @@ class TokenManagerCodeGenerator implements org.javacc.parser.TokenManagerCodeGen
       if (i > 0) {
         cb.println(",");
       }
-      cb.print("    ");
+      //      cb.print("    ");
+      cb.print("    /* " + i + " */ ");
       // TODO(sreeni) : Fix this mess.
       cb.print(tmp == null ? Integer.MAX_VALUE : tmp.kind);
     }
@@ -339,11 +344,13 @@ class TokenManagerCodeGenerator implements org.javacc.parser.TokenManagerCodeGen
         cb.println(",");
       }
       if (tmp == null) {
-        cb.print("    new int[] {}");
+        //        cb.print("    new int[] {}");
+        cb.print("    /* " + i + " */ new int[] {}");
         continue;
       }
       int k = 0;
-      cb.print("    new int[] { ");
+      //      cb.print("    new int[] { ");
+      cb.print("    /* " + i + " */ new int[] { ");
       for (final int s : tmp.nextStates) {
         if (k++ > 0) {
           cb.print(", ");
