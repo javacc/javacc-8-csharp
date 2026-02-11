@@ -41,7 +41,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-      # C# only on windows
+      # csharp only on windows
 #      os: [ubuntu-latest, windows-latest, macos-latest]
       os: [windows-latest]
 
