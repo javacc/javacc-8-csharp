@@ -43,6 +43,7 @@ jobs:
       matrix:
       # C# only on windows
 #       os: [ubuntu-latest, windows-latest, macos-latest]
+# TODO see how to configure csharp compiler on this platform
        os: [windows-latest]
 
     steps:
