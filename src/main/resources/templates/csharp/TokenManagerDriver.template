@@ -643,7 +643,7 @@ ${decls}
   }
 
   static string disp_char(int ic) {
-    return "`" + ic.ToString() + " / '" + add_escapes(ic) + "'\u00b4";
+    return "<" + ic.ToString() + " / '" + add_escapes(ic) + "'>";
   }
 
   /**

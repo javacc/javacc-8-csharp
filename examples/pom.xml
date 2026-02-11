@@ -48,7 +48,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
   <modules>
     <module>CORBA-IDL</module>
     <module>Interpreter</module>
-    <module>JJTree</module>
+    <!-- JavaCC / JJTree does not manage pointer syntaxes -->
+    <!--    <module>JJTree</module>-->
     <module>LexicalState</module>
     <module>MailProcessing</module>
     <module>UserTokenManager</module>

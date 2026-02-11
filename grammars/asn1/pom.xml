@@ -45,6 +45,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
   <name>JavaCC C# code generator / grammars / asn1</name>
 
+  <!-- TODO add a main -->
+
   <build>
     <plugins>
       <!-- 

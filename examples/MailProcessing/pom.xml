@@ -91,17 +91,16 @@ THE POSSIBILITY OF SUCH DAMAGE.
           <verbose>true</verbose>
         </configuration>
         <executions>
-        <!-- strange way to define 2 executions not exactly in the same manner (id, goal, phase) -->
+          <!-- strange way to define 2 executions not exactly in the same manner (id, goal, phase) -->
           <execution>
             <id>default-compile</id>
             <configuration>
-              <compileSourceRoots>src/main/csharp/dig,target/generated-sources/csharp/dig</compileSourceRoots>
-              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
-              <compilerArguments>
-                <nologo>true</nologo>
-                <target>exe</target>
-                <out>${project.artifactId}-digest.exe</out>
-              </compilerArguments>
+              <includes>
+                <include>dig/**</include>
+              </includes>
+              <compilerArgs>
+                <out>-out:${project.artifactId}-digest.exe</out>
+              </compilerArgs>
             </configuration>
           </execution>
           <execution>
@@ -111,15 +110,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
             </goals>
             <phase>compile</phase>
             <configuration>
-              <compileSourceRoots>src/main/csharp/faq,target/generated-sources/csharp/faq</compileSourceRoots>
-              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
-              <compilerArguments>
-                <nologo>true</nologo>
-                <target>exe</target>
-                <out>${project.artifactId}-faq.exe</out>
-              </compilerArguments>
+              <includes>
+                <include>faq/**</include>
+              </includes>
+              <compilerArgs>
+                <out>-out:${project.artifactId}-faq.exe</out>
+              </compilerArgs>
             </configuration>
-        </execution>
+          </execution>
         </executions>
       </plugin>
 

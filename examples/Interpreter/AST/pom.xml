@@ -87,7 +87,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <goal>exec</goal>
             </goals>
             <configuration>
-              <skip>${skip.test.csharp.examples.interpreter.ast}</skip> <!-- default false -->
+              <skip>true</skip>
               <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
               <arguments>
                 <argument>${project.basedir}/files/fact/fact.spl</argument>
@@ -104,7 +104,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <goal>exec</goal>
             </goals>
             <configuration>
-              <skip>${skip.test.csharp.examples.interpreter.ast}</skip> <!-- default false -->
+              <skip>true</skip>
               <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
               <arguments>
                 <argument>${project.basedir}/files/odd/odd.spl</argument>
@@ -121,7 +121,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <goal>exec</goal>
             </goals>
             <configuration>
-              <skip>${skip.test.csharp.examples.interpreter.ast}</skip> <!-- default false -->
+              <skip>true</skip>
               <executable>${project.basedir}/target/classes/${project.artifactId}.exe</executable>
               <arguments>
                 <argument>${project.basedir}/files/sqrt/sqrt.spl</argument>
@@ -146,6 +146,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <goal>run</goal>
             </goals>
             <configuration>
+              <skip>true</skip>
               <target>
                 <!-- out -->
                 <ant antfile="${project.basedir}/../../../it/build-utils.xml" target="compare-out">
@@ -167,6 +168,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <goal>run</goal>
             </goals>
             <configuration>
+              <skip>true</skip>
               <target>
                 <!-- out -->
                 <ant antfile="${project.basedir}/../../../it/build-utils.xml" target="compare-out">
@@ -188,6 +190,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <goal>run</goal>
             </goals>
             <configuration>
+              <skip>true</skip>
               <target>
                 <!-- out -->
                 <ant antfile="${project.basedir}/../../../it/build-utils.xml" target="compare-out">

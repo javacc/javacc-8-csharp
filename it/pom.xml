@@ -53,11 +53,20 @@ THE POSSIBILITY OF SUCH DAMAGE.
        defines non herited settings (help) and specific settings (codeGenerator, profiles)
   -->
 
+  <modules>
+    <module>../issues</module>
+    <module>../examples</module>
+    <module>../grammars</module>
+  </modules>
+
   <properties>
     <mojohaus.build-helper-maven-plugin.version>3.6.0</mojohaus.build-helper-maven-plugin.version>
-    <!--    <plexus-compiler-csharp.version>2.15.0</plexus-compiler-csharp.version>-->
-    <plexus-compiler-csharp.version>2.15.1-SNAPSHOT</plexus-compiler-csharp.version>
+    <plexus-compiler-csharp.version>2.16.2</plexus-compiler-csharp.version>
+    <!--    <plexus-compiler-csharp.version>2.15.1-SNAPSHOT</plexus-compiler-csharp.version>-->
+    <!-- temp, overriding base -->
+    <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
   </properties>
+
 
   <build>
     <pluginManagement>
@@ -152,14 +161,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
           <failOnError>true</failOnError>
           <fork>true</fork>
           <verbose>true</verbose>
-          <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
-          <compilerArguments>
-            <nologo>true</nologo>
-            <target>exe</target>
-            <out>${project.artifactId}.exe</out>
-            <!--  unfortunately compiler options PreferredUILang & Utf8Output not supported
-            https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
-          </compilerArguments>
+          <compilerArgs>
+            <out>-out:${project.artifactId}.exe</out>
+          </compilerArgs>
         </configuration>
       </plugin>
 
@@ -222,7 +226,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 <id>jjt8-jjt-jjc</id>
                 <phase>generate-sources</phase>
                 <goals>
-                  <goal>jjtree-javacc</goal>
+                  <goal>jjtree</goal>
                 </goals>
                 <configuration>
                   <codeGenerator>c#</codeGenerator>
@@ -250,14 +254,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <!--              <failOnError>false</failOnError>-->
               <fork>true</fork>
               <verbose>true</verbose>
-              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
-              <compilerArguments>
-                <nologo>true</nologo>
-                <target>exe</target>
-                <out>${project.artifactId}.exe</out>
-                <!--  unfortunately compiler options PreferredUILang & Utf8Output not supported
-                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
-              </compilerArguments>
+              <compilerArgs>
+                <out>-out:${project.artifactId}.exe</out>
+              </compilerArgs>
             </configuration>
           </plugin>
         </plugins>
@@ -323,14 +322,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <!--              <failOnError>false</failOnError>-->
               <fork>true</fork>
               <verbose>true</verbose>
-              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
-              <compilerArguments>
-                <nologo>true</nologo>
-                <target>exe</target>
-                <out>${project.artifactId}.exe</out>
-                <!--  unfortunately compiler options PreferredUILang & Utf8Output not supported
-                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
-              </compilerArguments>
+              <compilerArgs>
+                <out>-out:${project.artifactId}.exe</out>
+              </compilerArgs>
             </configuration>
           </plugin>
         </plugins>
@@ -368,7 +362,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
                   <goal>jjtree-javacc</goal>
                 </goals>
                 <configuration>
-                  <outputDirectory>target/generated-sources/java</outputDirectory>
+                  <outputDirectory>target/generated-sources/csharp</outputDirectory>
                   <sourceDirectory>src/main/jjtree</sourceDirectory>
                   <nodeDirectory>src/main/java</nodeDirectory>
                 </configuration>
@@ -390,14 +384,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <compilerId>csharp</compilerId>
               <verbose>true</verbose>
               <fork>true</fork>
-              <!-- compilerArguments raises a depecation warning but works, compilerArgs does not -->
-              <compilerArguments>
-                <nologo>true</nologo>
-                <target>exe</target>
-                <out>${project.artifactId}.exe</out>
-                <!--  unfortunately compiler options PreferredUILang & Utf8Output not supported
-                https://github.com/codehaus-plexus/plexus-compiler/blob/plexus-compiler-2.15.0/plexus-compilers/plexus-compiler-csharp/src/main/java/org/codehaus/plexus/compiler/csharp/CSharpCompiler.java-->
-              </compilerArguments>
+              <compilerArgs>
+                <out>-out:${project.artifactId}.exe</out>
+              </compilerArgs>
             </configuration>
           </plugin>
         </plugins>
@@ -450,22 +439,68 @@ THE POSSIBILITY OF SUCH DAMAGE.
               <compilerId>csharp</compilerId>
               <fork>true</fork>
               <executable>${env.CSCCOMPILERDIR}\csc.exe</executable>
-              <!-- compilerArguments raises a depecation warning -->
-              <!--              <compilerArguments>-->
-              <!--                <nologo>true</nologo>-->
-              <!--                <nowarn>0414</nowarn>-->
-              <!--                <utf8output>true</utf8output>-->
-              <!--                <target>exe</target>-->
-              <!--                <out>${project.artifactId}.exe</out>-->
-              <!--              </compilerArguments>-->
               <compilerArgs>
-                <arg>-nologo:true</arg>
-                <arg>-nowarn:0414</arg>
-                <arg>-utf8output:true</arg>
-                <arg>-target:exe</arg>
-                <arg>-out:${project.artifactId}.exe</arg>
+                <log>-nologo:true</log>
+                <war>-nowarn:0414</war>
+                <utf>-utf8output:true</utf>
+                <tgt>-target:exe</tgt>
+                <out>-out:${project.artifactId}.exe</out>
               </compilerArgs>
             </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <!-- for debugging on different environments
+         needs explicit activation -->
+      <id>disp-per</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>display-props</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <echoproperties />
+                  </target>
+                </configuration>
+              </execution>
+              <execution>
+                <id>display-env</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <property environment="env" />
+                    <echoproperties prefix="env." />
+                  </target>
+                </configuration>
+              </execution>
+              <execution>
+                <id>display-runtime</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <property runtime="rt" />
+                    <echoproperties prefix="rt." />
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

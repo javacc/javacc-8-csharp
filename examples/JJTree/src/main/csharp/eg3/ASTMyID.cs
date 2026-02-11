@@ -27,37 +27,43 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-package eg2;
-
 /**
- * An ID.
- */
+package eg3;
+
+import eg3.Node;
+import eg3.ASTMyID;
+
 public class ASTMyID extends Node {
   private String name;
 
-  /**
-   * Constructor.
-   * @param id the id
-   */
   public ASTMyID(int id) {
     super(id);
   }
 
-
-  /**
-   * Set the name.
-   * @param n the name
-   */
   public void setName(String n) {
     name = n;
   }
 
-  /**
-   * {@inheritDoc}
-   * @see org.javacc.examples.jjtree.eg2.SimpleNode#toString()
-   */
   public String toString() {
     return "Identifier: " + name;
   }
+   */
+namespace eg3 {
+
+public partial class ASTMyID : Node {
+
+  public string name;
+
+  public STId(int id) : base (id) {}
+
+  public void setName(string n) {
+    name = n;
+  }
+
+  public override string ToString() {
+    return "Identifier: " + name;
+  }
+
+}
 
 }
